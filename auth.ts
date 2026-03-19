@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: { signIn: "/", error: "/" },
   providers: [
@@ -11,7 +12,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: {},
         password: {},
-        otpVerified: {}, // flag passé après vérification OTP
+        otpVerified: {},
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
@@ -37,7 +38,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           email: user.email,
           role: user.role,
           status: user.status,
-          // 2FA : si otpVerified n'est pas "true", on bloque en session temporaire
           needs2fa: credentials.otpVerified !== "true",
         }
       },
@@ -54,9 +54,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token
     },
     async session({ session, token }) {
-      session.user.id     = token.id as string
-      ;(session.user as any).role   = token.role
-      ;(session.user as any).status = token.status
+      session.user.id           = token.id as string
+      ;(session.user as any).role     = token.role
+      ;(session.user as any).status   = token.status
       ;(session.user as any).needs2fa = token.needs2fa
       return session
     },
