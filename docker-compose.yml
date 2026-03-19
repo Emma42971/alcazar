@@ -24,6 +24,8 @@ services:
     restart: unless-stopped
     depends_on:
       db: { condition: service_healthy }
+    ports:
+      - "3000:3000"
     environment:
       DATABASE_URL: mysql://${MYSQL_USER:-alcazar_user}:${MYSQL_PASSWORD:-AlcazarDB2026x}@db:3306/${MYSQL_DATABASE:-alcazar_portal}
       AUTH_SECRET: ${AUTH_SECRET:-change_me_in_hostinger_panel_32chars}
@@ -37,28 +39,9 @@ services:
       - uploads_data:/app/uploads
     networks: [alcazar_net]
 
-  caddy:
-    image: caddy:2-alpine
-    container_name: alcazar_caddy
-    restart: unless-stopped
-    ports: ["80:80", "443:443"]
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
-    environment:
-      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
-    command: >
-      caddy reverse-proxy
-      --from :80
-      --to app:3000
-    depends_on: [app]
-    networks: [alcazar_net]
-
 volumes:
   mysql_data:
   uploads_data:
-  caddy_data:
-  caddy_config:
 
 networks:
   alcazar_net:
