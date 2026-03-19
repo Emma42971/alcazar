@@ -43,9 +43,14 @@ services:
     restart: unless-stopped
     ports: ["80:80", "443:443"]
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
+    environment:
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+    command: >
+      caddy reverse-proxy
+      --from :80
+      --to app:3000
     depends_on: [app]
     networks: [alcazar_net]
 
