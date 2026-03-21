@@ -1,5 +1,5 @@
 "use client"
-import { useState, useCallback } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Loader2 } from "lucide-react"
@@ -7,6 +7,18 @@ import { Loader2 } from "lucide-react"
 const STATUSES = ["Open","Fundraising","Goal Reached","Closed","Coming Soon"]
 const SECTORS  = ["Real Estate","Private Equity","Technology","Healthcare","Energy","Infrastructure","Other"]
 const RISKS    = ["Low","Medium","Medium-High","High"]
+
+// Standalone Toggle component — hors du composant parent pour éviter re-renders
+function Toggle({ value, onChange, label }: { value: boolean; onChange: () => void; label: string }) {
+  return (
+    <label className="flex items-center gap-3 cursor-pointer">
+      <div onClick={onChange} className="relative w-9 h-5 rounded-full transition-colors" style={{ background: value ? "hsl(var(--foreground) / 0.8)" : "hsl(var(--border))" }}>
+        <div className="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform" style={{ transform: value ? "translateX(16px)" : "translateX(0)" }}/>
+      </div>
+      <span className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>{label}</span>
+    </label>
+  )
+}
 
 export function ProjectEditForm({ project }: { project: any | null }) {
   const router = useRouter()
@@ -92,16 +104,6 @@ export function ProjectEditForm({ project }: { project: any | null }) {
       setTimeout(() => setSaved(false), 2000)
     }
   }
-
-  const Toggle = useCallback(({ value, onChange, label }: { value: boolean; onChange: () => void; label: string }) => (
-    <label className="flex items-center gap-3 cursor-pointer">
-      <div onClick={onChange} className="relative w-9 h-5 rounded-full transition-colors" style={{ background: value ? "hsl(0 0% 75%)" : "hsl(0 0% 18%)" }}>
-        <div className="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform" style={{ transform: value ? "translateX(16px)" : "translateX(0)" }}/>
-      </div>
-      <span className="text-sm" style={{ color: "hsl(0 0% 65%)" }}>{label}</span>
-    </label>
-  ), [])
-
   const inp = "w-full rounded-lg px-3 py-2 text-sm outline-none"
   const inpStyle = { background: "hsl(0 0% 9%)", border: "1px solid hsl(0 0% 15%)", color: "hsl(0 0% 85%)" }
   const section = "rounded-xl border p-5 space-y-4"
