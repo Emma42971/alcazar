@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/auth"
+import { getToken } from "next-auth/jwt"
 
-// Rate limiting — in-memory store (Edge Runtime compatible)
+// In-memory rate limiter (Edge Runtime compatible)
 const store = new Map<string, { count: number; resetAt: number }>()
 
 function checkRateLimit(key: string, max: number, windowMs: number): boolean {
@@ -9,10 +9,10 @@ function checkRateLimit(key: string, max: number, windowMs: number): boolean {
   const record = store.get(key)
   if (!record || now > record.resetAt) {
     store.set(key, { count: 1, resetAt: now + windowMs })
-    return false // not limited
+    return false
   }
   record.count++
-  return record.count > max // limited
+  return record.count > max
 }
 
 export async function middleware(req: NextRequest) {
@@ -22,9 +22,10 @@ export async function middleware(req: NextRequest) {
   // Rate limiting
   if (pathname.startsWith("/api/auth")) {
     if (checkRateLimit(`auth:${ip}`, 10, 15 * 60 * 1000)) {
-      return NextResponse.json({ error: "Too many auth attempts. Try again in 15 minutes." }, {
-        status: 429, headers: { "Retry-After": "900" }
-      })
+      return NextResponse.json(
+        { error: "Too many auth attempts. Try again in 15 minutes." },
+        { status: 429, headers: { "Retry-After": "900" } }
+      )
     }
   } else if (pathname.startsWith("/api/")) {
     if (checkRateLimit(`api:${ip}`, 100, 60 * 1000)) {
@@ -32,23 +33,28 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Auth protection
-  const session = await auth()
+  // Use getToken instead of auth() — Edge Runtime compatible, no Prisma
+  const token = await getToken({
+    req,
+    secret: process.env.AUTH_SECRET,
+  })
 
+  // Admin protection
   if (pathname.startsWith("/admin")) {
-    if (!session?.user) {
+    if (!token) {
       return NextResponse.redirect(new URL("/?callbackUrl=" + encodeURIComponent(pathname), req.url))
     }
-    if (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN") {
+    if (token.role !== "ADMIN" && token.role !== "SUPER_ADMIN") {
       return NextResponse.redirect(new URL("/dashboard", req.url))
     }
   }
 
+  // Investor protection
   if (pathname.startsWith("/dashboard") || pathname.startsWith("/projects")) {
-    if (!session?.user) {
+    if (!token) {
       return NextResponse.redirect(new URL("/?callbackUrl=" + encodeURIComponent(pathname), req.url))
     }
-    if (session.user.status === "PENDING_APPROVAL") {
+    if (token.status === "PENDING_APPROVAL") {
       return NextResponse.redirect(new URL("/auth/pending", req.url))
     }
   }
