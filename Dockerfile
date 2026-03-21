@@ -6,6 +6,7 @@ FROM base AS deps
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
+ENV DATABASE_URL=mysql://root:root@localhost:3306/placeholder
 RUN npm install --legacy-peer-deps || npm install --force || npm install
 RUN npx prisma generate
 
