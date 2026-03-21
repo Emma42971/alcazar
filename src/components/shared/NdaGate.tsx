@@ -33,13 +33,13 @@ export function NdaGate({ project, user, hasAccess, ndaStatus }: Props) {
   // Not logged in
   if (!user) {
     return (
-      <div className="rounded-xl border p-8 text-center space-y-4" style={{ background: "hsl(0 0% 6%)", borderColor: "hsl(0 0% 12%)" }}>
+      <div className="rounded-xl border p-8 text-center space-y-4" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
         <div className="text-4xl">🔒</div>
         <p className="font-medium" style={{ fontFamily: "'DM Serif Display',serif" }}>Sign in to access the full project</p>
-        <p className="text-sm" style={{ color: "hsl(0 0% 45%)" }}>Create an account or sign in to view documents, financials, and project details.</p>
+        <p className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>Create an account or sign in to view documents, financials, and project details.</p>
         <div className="flex gap-3 justify-center">
-          <Link href="/" className="px-4 py-2 rounded-lg text-sm border transition-colors" style={{ borderColor: "hsl(0 0% 20%)", color: "hsl(0 0% 60%)" }}>Sign In</Link>
-          <Link href="/auth/register" className="px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "hsl(0 0% 98%)", color: "hsl(0 0% 5%)" }}>Request Access</Link>
+          <Link href="/" className="px-4 py-2 rounded-lg text-sm border transition-colors" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>Sign In</Link>
+          <Link href="/auth/register" className="px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "hsl(var(--surface))", color: "hsl(var(--text-subtle))" }}>Request Access</Link>
         </div>
       </div>
     )
@@ -48,9 +48,9 @@ export function NdaGate({ project, user, hasAccess, ndaStatus }: Props) {
   // NDA pending
   if (ndaStatus === "PENDING") {
     return (
-      <div className="rounded-xl border p-6 space-y-2" style={{ background: "hsl(0 0% 6%)", borderColor: "hsl(0 0% 12%)" }}>
+      <div className="rounded-xl border p-6 space-y-2" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
         <p className="font-medium text-sm">⏳ NDA under review</p>
-        <p className="text-sm" style={{ color: "hsl(0 0% 45%)" }}>Your NDA is pending approval. You'll receive an email once access is granted.</p>
+        <p className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>Your NDA is pending approval. You'll receive an email once access is granted.</p>
       </div>
     )
   }
@@ -58,9 +58,9 @@ export function NdaGate({ project, user, hasAccess, ndaStatus }: Props) {
   // NDA rejected
   if (ndaStatus === "REJECTED") {
     return (
-      <div className="rounded-xl border p-6" style={{ background: "hsl(0 0% 6%)", borderColor: "hsl(0 72% 51% / 0.3)" }}>
+      <div className="rounded-xl border p-6" style={{ background: "hsl(var(--surface))", borderColor: "hsl(0 72% 51% / 0.3)" }}>
         <p className="font-medium text-sm" style={{ color: "hsl(0 72% 65%)" }}>Access not granted</p>
-        <p className="text-sm mt-1" style={{ color: "hsl(0 0% 45%)" }}>Your NDA was not approved. Please contact us for more information.</p>
+        <p className="text-sm mt-1" style={{ color: "hsl(var(--text-subtle))" }}>Your NDA was not approved. Please contact us for more information.</p>
       </div>
     )
   }
@@ -130,16 +130,16 @@ export function NdaGate({ project, user, hasAccess, ndaStatus }: Props) {
   // No NDA required — just request access
   if (!project.ndaRequired) {
     return (
-      <div className="rounded-xl border p-6 space-y-4" style={{ background: "hsl(0 0% 6%)", borderColor: "hsl(0 0% 12%)" }}>
+      <div className="rounded-xl border p-6 space-y-4" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
         <p className="font-medium text-sm">Request access to this project</p>
-        <p className="text-sm" style={{ color: "hsl(0 0% 45%)" }}>Submit an inquiry and our team will review your request.</p>
+        <p className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>Submit an inquiry and our team will review your request.</p>
         {error && <div className="alert-error">{error}</div>}
         <textarea
           id="inquiry-msg"
           placeholder="Tell us about your interest in this project…"
           rows={3}
           className="w-full rounded-lg px-3 py-2 text-sm outline-none resize-none"
-          style={{ background: "hsl(0 0% 9%)", border: "1px solid hsl(0 0% 16%)", color: "hsl(0 0% 85%)" }}
+          style={{ background: "hsl(var(--surface))", border: "1px solid hsl(var(--border))", color: "hsl(var(--text-subtle))" }}
         />
         <button onClick={async () => {
           const msg = (document.getElementById("inquiry-msg") as HTMLTextAreaElement)?.value
@@ -147,7 +147,7 @@ export function NdaGate({ project, user, hasAccess, ndaStatus }: Props) {
           const r = await fetch("/api/inquiry", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ projectId: project.id, message: msg }) })
           setLoading(false)
           if (r.ok) router.refresh()
-        }} disabled={loading} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "hsl(0 0% 98%)", color: "hsl(0 0% 5%)" }}>
+        }} disabled={loading} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "hsl(var(--surface))", color: "hsl(var(--text-subtle))" }}>
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}Request Access
         </button>
       </div>
@@ -156,28 +156,28 @@ export function NdaGate({ project, user, hasAccess, ndaStatus }: Props) {
 
   // NDA sign form
   return (
-    <div className="rounded-xl border overflow-hidden" style={{ background: "hsl(0 0% 6%)", borderColor: "hsl(0 0% 12%)" }}>
-      <div className="flex items-center gap-3 p-5 border-b" style={{ borderColor: "hsl(0 0% 10%)", background: "hsl(0 0% 7%)" }}>
-        <div className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "hsl(0 0% 10%)" }}>
-          <PenLine className="h-4 w-4" style={{ color: "hsl(0 0% 55%)" }} />
+    <div className="rounded-xl border overflow-hidden" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
+      <div className="flex items-center gap-3 p-5 border-b" style={{ borderColor: "hsl(var(--border))", background: "hsl(var(--surface))" }}>
+        <div className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "hsl(var(--surface))" }}>
+          <PenLine className="h-4 w-4" style={{ color: "hsl(var(--text-subtle))" }} />
         </div>
         <div>
           <p className="text-sm font-medium">Sign NDA to access data room</p>
-          <p className="text-xs" style={{ color: "hsl(0 0% 45%)" }}>Your signature will be reviewed before access is granted.</p>
+          <p className="text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Your signature will be reviewed before access is granted.</p>
         </div>
       </div>
 
       <div className="p-5 space-y-5">
         {/* NDA text */}
         {project.ndaText && (
-          <div className="rounded-lg p-4 h-44 overflow-y-auto text-xs leading-relaxed" style={{ background: "hsl(0 0% 4%)", border: "1px solid hsl(0 0% 10%)", color: "hsl(0 0% 55%)", whiteSpace: "pre-wrap" }}>
+          <div className="rounded-lg p-4 h-44 overflow-y-auto text-xs leading-relaxed" style={{ background: "hsl(var(--surface))", border: "1px solid hsl(var(--border))", color: "hsl(var(--text-subtle))", whiteSpace: "pre-wrap" }}>
             {project.ndaText}
           </div>
         )}
 
         {/* Signer name */}
         <div className="space-y-1.5">
-          <label className="text-sm" style={{ color: "hsl(0 0% 65%)" }}>Your full name</label>
+          <label className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>Your full name</label>
           <input
             value={signerName}
             onChange={e => setSignerName(e.target.value)}
@@ -189,8 +189,8 @@ export function NdaGate({ project, user, hasAccess, ndaStatus }: Props) {
         {/* Signature canvas */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-sm" style={{ color: "hsl(0 0% 65%)" }}>Signature</label>
-            <button onClick={clearCanvas} className="text-xs" style={{ color: "hsl(0 0% 40%)" }}>Clear</button>
+            <label className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>Signature</label>
+            <button onClick={clearCanvas} className="text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Clear</button>
           </div>
           <canvas
             ref={canvasRef}
@@ -204,7 +204,7 @@ export function NdaGate({ project, user, hasAccess, ndaStatus }: Props) {
             onTouchMove={draw}
             onTouchEnd={endDraw}
             className="w-full rounded-lg cursor-crosshair touch-none"
-            style={{ background: "hsl(0 0% 9%)", border: "1px solid hsl(0 0% 16%)", height: "80px" }}
+            style={{ background: "hsl(var(--surface))", border: "1px solid hsl(var(--border))", height: "80px" }}
           />
         </div>
 
@@ -216,7 +216,7 @@ export function NdaGate({ project, user, hasAccess, ndaStatus }: Props) {
             onChange={e => setAgreed(e.target.checked)}
             className="mt-0.5"
           />
-          <span className="text-sm leading-snug" style={{ color: "hsl(0 0% 50%)" }}>
+          <span className="text-sm leading-snug" style={{ color: "hsl(var(--text-subtle))" }}>
             I have read and agree to the NDA. I understand my submission will be reviewed before access is granted.
           </span>
         </label>
@@ -227,7 +227,7 @@ export function NdaGate({ project, user, hasAccess, ndaStatus }: Props) {
           onClick={signNda}
           disabled={loading}
           className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-opacity"
-          style={{ background: "hsl(0 0% 98%)", color: "hsl(0 0% 5%)", opacity: loading ? 0.7 : 1 }}
+          style={{ background: "hsl(var(--surface))", color: "hsl(var(--text-subtle))", opacity: loading ? 0.7 : 1 }}
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           Sign & Submit NDA

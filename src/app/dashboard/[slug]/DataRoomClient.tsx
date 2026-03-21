@@ -109,22 +109,22 @@ export function DataRoomClient({ project, documents, questions: initialQuestions
       {/* Project header */}
       <div className="flex items-start gap-4">
         {project.logoImage && (
-          <img src={project.logoImage} alt="" className="h-12 w-12 rounded-xl object-cover shrink-0 border" style={{ borderColor: "hsl(0 0% 14%)" }} />
+          <img src={project.logoImage} alt="" className="h-12 w-12 rounded-xl object-cover shrink-0 border" style={{ borderColor: "hsl(var(--border))" }} />
         )}
         <div className="flex-1 min-w-0">
           <h1 className="text-2xl sm:text-3xl" style={{ fontFamily: "'DM Serif Display',serif" }}>{project.name}</h1>
-          {project.summary && <p className="mt-1 text-sm" style={{ color: "hsl(0 0% 50%)" }}>{project.summary}</p>}
+          {project.summary && <p className="mt-1 text-sm" style={{ color: "hsl(var(--text-subtle))" }}>{project.summary}</p>}
           {project.description && (
             <button
               onClick={() => setDescOpen(!descOpen)}
               className="flex items-center gap-1 mt-2 text-xs transition-colors"
-              style={{ color: "hsl(0 0% 40%)" }}
+              style={{ color: "hsl(var(--text-subtle))" }}
             >
               {descOpen ? <><ChevronUp className="h-3 w-3" />Hide description</> : <><ChevronDown className="h-3 w-3" />Read more</>}
             </button>
           )}
           {descOpen && project.description && (
-            <p className="mt-3 text-sm leading-relaxed" style={{ color: "hsl(0 0% 55%)", whiteSpace: "pre-wrap" }}>
+            <p className="mt-3 text-sm leading-relaxed" style={{ color: "hsl(var(--text-subtle))", whiteSpace: "pre-wrap" }}>
               {project.description}
             </p>
           )}
@@ -134,13 +134,13 @@ export function DataRoomClient({ project, documents, questions: initialQuestions
       {/* Data Room */}
       <section className="space-y-4">
         <div className="flex items-center gap-2">
-          <FileText className="h-4 w-4" style={{ color: "hsl(0 0% 40%)" }} />
+          <FileText className="h-4 w-4" style={{ color: "hsl(var(--text-subtle))" }} />
           <h2 className="font-medium">Data Room</h2>
-          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "hsl(0 0% 10%)", color: "hsl(0 0% 50%)" }}>{documents.length}</span>
+          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "hsl(var(--surface))", color: "hsl(var(--text-subtle))" }}>{documents.length}</span>
         </div>
 
         {documents.length === 0 ? (
-          <p className="text-sm" style={{ color: "hsl(0 0% 35%)" }}>No documents uploaded yet.</p>
+          <p className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>No documents uploaded yet.</p>
         ) : (
           <div className="space-y-2">
             {documents.map(doc => {
@@ -154,23 +154,23 @@ export function DataRoomClient({ project, documents, questions: initialQuestions
                 <div
                   key={doc.id}
                   className="flex items-center justify-between gap-4 p-4 rounded-xl border transition-colors"
-                  style={{ background: "hsl(0 0% 5.5%)", borderColor: "hsl(0 0% 11%)" }}
+                  style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold" style={{ background: "hsl(0 0% 9%)", color: "hsl(0 0% 50%)" }}>
+                    <div className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold" style={{ background: "hsl(var(--surface))", color: "hsl(var(--text-subtle))" }}>
                       {ext}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-medium truncate" style={{ color: "hsl(0 0% 88%)" }}>{doc.name}</p>
+                        <p className="text-sm font-medium truncate" style={{ color: "hsl(var(--text-subtle))" }}>{doc.name}</p>
                         {isNew && (
                           <span className="badge badge-new shrink-0" style={{ fontSize: "10px" }}>New</span>
                         )}
                         {doc.version > 1 && (
-                          <span className="text-xs" style={{ color: "hsl(0 0% 35%)" }}>v{doc.version}</span>
+                          <span className="text-xs" style={{ color: "hsl(var(--text-subtle))" }}>v{doc.version}</span>
                         )}
                       </div>
-                      <p className="text-xs mt-0.5" style={{ color: "hsl(0 0% 38%)" }}>
+                      <p className="text-xs mt-0.5" style={{ color: "hsl(var(--text-subtle))" }}>
                         {ext}{size ? ` · ${size}` : ""}
                         {doc.viewCount > 0 && ` · viewed ${doc.viewCount}×`}
                       </p>
@@ -185,7 +185,7 @@ export function DataRoomClient({ project, documents, questions: initialQuestions
                       onClick={() => trackOpen(doc)}
                       onBlur={() => trackClose(doc.id)}
                       className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border transition-colors"
-                      style={{ borderColor: "hsl(0 0% 16%)", color: "hsl(0 0% 55%)" }}
+                      style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}
                     >
                       <Eye className="h-3 w-3" />
                       <span className="hidden sm:inline">View</span>
@@ -194,7 +194,7 @@ export function DataRoomClient({ project, documents, questions: initialQuestions
                       href={`${fileUrl}?download=1`}
                       onClick={() => fetch("/api/track-document", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ documentId: doc.id, projectId: project.id, event: "download" }) })}
                       className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border transition-colors"
-                      style={{ borderColor: "hsl(0 0% 16%)", color: "hsl(0 0% 55%)" }}
+                      style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}
                     >
                       <Download className="h-3 w-3" />
                     </a>
@@ -209,22 +209,22 @@ export function DataRoomClient({ project, documents, questions: initialQuestions
       {/* Q&A */}
       <section className="space-y-4">
         <div className="flex items-center gap-2">
-          <MessageSquare className="h-4 w-4" style={{ color: "hsl(0 0% 40%)" }} />
+          <MessageSquare className="h-4 w-4" style={{ color: "hsl(var(--text-subtle))" }} />
           <h2 className="font-medium">Questions & Answers</h2>
         </div>
-        <p className="text-sm" style={{ color: "hsl(0 0% 45%)" }}>
+        <p className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>
           Ask a question about this project. Responses are private — only you can see them.
         </p>
 
         {/* Ask form */}
-        <div className="rounded-xl border p-4 space-y-3" style={{ background: "hsl(0 0% 5.5%)", borderColor: "hsl(0 0% 11%)" }}>
+        <div className="rounded-xl border p-4 space-y-3" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
           <textarea
             value={qaInput}
             onChange={e => setQaInput(e.target.value)}
             placeholder="Your question about this project…"
             rows={3}
             className="w-full rounded-lg px-3 py-2 text-sm outline-none resize-none"
-            style={{ background: "hsl(0 0% 9%)", border: "1px solid hsl(0 0% 15%)", color: "hsl(0 0% 85%)" }}
+            style={{ background: "hsl(var(--surface))", border: "1px solid hsl(var(--border))", color: "hsl(var(--text-subtle))" }}
           />
           {qaError && <p className="text-xs" style={{ color: "hsl(0 72% 65%)" }}>{qaError}</p>}
           {qaSuccess && <p className="text-xs" style={{ color: "hsl(142 71% 55%)" }}>✓ Question sent — we'll respond privately.</p>}
@@ -232,7 +232,7 @@ export function DataRoomClient({ project, documents, questions: initialQuestions
             onClick={askQuestion}
             disabled={qaLoading || !qaInput.trim()}
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-opacity"
-            style={{ background: "hsl(0 0% 90%)", color: "hsl(0 0% 5%)", opacity: (qaLoading || !qaInput.trim()) ? 0.5 : 1 }}
+            style={{ background: "hsl(var(--surface))", color: "hsl(var(--text-subtle))", opacity: (qaLoading || !qaInput.trim()) ? 0.5 : 1 }}
           >
             {qaLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             Ask Question
@@ -243,16 +243,16 @@ export function DataRoomClient({ project, documents, questions: initialQuestions
         {questions.length > 0 && (
           <div className="space-y-3">
             {questions.map(q => (
-              <div key={q.id} className="rounded-xl border overflow-hidden" style={{ borderColor: "hsl(0 0% 11%)" }}>
+              <div key={q.id} className="rounded-xl border overflow-hidden" style={{ borderColor: "hsl(var(--border))" }}>
                 {/* Question */}
-                <div className="p-4" style={{ background: "hsl(0 0% 6%)" }}>
+                <div className="p-4" style={{ background: "hsl(var(--surface))" }}>
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm" style={{ color: "hsl(0 0% 80%)" }}>{q.question}</p>
+                    <p className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>{q.question}</p>
                     <span className={`badge shrink-0 text-xs ${q.answer ? "badge-approved" : "badge-pending"}`}>
                       {q.answer ? "Answered" : "Pending"}
                     </span>
                   </div>
-                  <p className="text-xs mt-1.5 flex items-center gap-1" style={{ color: "hsl(0 0% 35%)" }}>
+                  <p className="text-xs mt-1.5 flex items-center gap-1" style={{ color: "hsl(var(--text-subtle))" }}>
                     <Clock className="h-3 w-3" />
                     {new Date(q.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                   </p>
@@ -260,14 +260,14 @@ export function DataRoomClient({ project, documents, questions: initialQuestions
 
                 {/* Answer */}
                 {q.answer && (
-                  <div className="p-4 border-t" style={{ background: "hsl(0 0% 4.5%)", borderColor: "hsl(0 0% 9%)" }}>
+                  <div className="p-4 border-t" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="h-5 w-5 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: "hsl(0 0% 12%)", color: "hsl(0 0% 55%)" }}>A</div>
-                      <span className="text-xs font-medium" style={{ color: "hsl(0 0% 50%)" }}>
+                      <div className="h-5 w-5 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: "hsl(var(--surface))", color: "hsl(var(--text-subtle))" }}>A</div>
+                      <span className="text-xs font-medium" style={{ color: "hsl(var(--text-subtle))" }}>
                         Team response · {q.answeredAt ? new Date(q.answeredAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : ""}
                       </span>
                     </div>
-                    <p className="text-sm leading-relaxed" style={{ color: "hsl(0 0% 65%)" }}>{q.answer}</p>
+                    <p className="text-sm leading-relaxed" style={{ color: "hsl(var(--text-subtle))" }}>{q.answer}</p>
                   </div>
                 )}
               </div>

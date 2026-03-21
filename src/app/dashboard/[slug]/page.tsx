@@ -48,7 +48,7 @@ export default async function DataRoomPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "hsl(0 0% 3.5%)" }}>
+    <div className="min-h-screen" style={{ background: "hsl(var(--surface))" }}>
       <InvestorHeader
         brandName={project.brandName}
         brandColor={project.brandColor}
@@ -56,10 +56,10 @@ export default async function DataRoomPage({ params }: Props) {
       />
 
       {/* Breadcrumb */}
-      <div className="border-b px-4 sm:px-6 py-2.5 flex items-center gap-2 text-xs" style={{ borderColor: "hsl(0 0% 10%)", color: "hsl(0 0% 40%)" }}>
+      <div className="border-b px-4 sm:px-6 py-2.5 flex items-center gap-2 text-xs" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>
         <a href="/dashboard" className="hover:text-white transition-colors">My Projects</a>
         <span>›</span>
-        <span style={{ color: "hsl(0 0% 70%)" }}>{project.name}</span>
+        <span style={{ color: "hsl(var(--text-subtle))" }}>{project.name}</span>
       </div>
 
       <DataRoomClient

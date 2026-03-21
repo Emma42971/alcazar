@@ -105,16 +105,16 @@ export function ProjectEditForm({ project }: { project: any | null }) {
     }
   }
   const inp = "w-full rounded-lg px-3 py-2 text-sm outline-none"
-  const inpStyle = { background: "hsl(0 0% 9%)", border: "1px solid hsl(0 0% 15%)", color: "hsl(0 0% 85%)" }
+  const inpStyle = { background: "hsl(var(--surface-raised))", border: "1px solid hsl(var(--border))", color: "hsl(var(--text))" }
   const section = "rounded-xl border p-5 space-y-4"
-  const sectionStyle = { background: "hsl(0 0% 5.5%)", borderColor: "hsl(0 0% 11%)" }
+  const sectionStyle = { background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }
 
   return (
     <form onSubmit={submit} className="space-y-8 max-w-3xl">
       <div className="flex items-center gap-3">
-        <Link href="/admin/projects" className="text-xs px-2.5 py-1.5 rounded-lg border" style={{ borderColor: "hsl(0 0% 16%)", color: "hsl(0 0% 55%)" }}>← Projects</Link>
+        <Link href="/admin/projects" className="text-xs px-2.5 py-1.5 rounded-lg border" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>← Projects</Link>
         <h1 className="text-xl font-semibold" style={{ fontFamily: "'DM Serif Display',serif" }}>{isNew ? "New Project" : `Edit — ${project.name}`}</h1>
-        {!isNew && <Link href={`/projects/${project.slug}?preview=1`} target="_blank" className="ml-auto text-xs px-2.5 py-1.5 rounded-lg border" style={{ borderColor: "hsl(0 0% 16%)", color: "hsl(0 0% 55%)" }}>👁 Preview</Link>}
+        {!isNew && <Link href={`/projects/${project.slug}?preview=1`} target="_blank" className="ml-auto text-xs px-2.5 py-1.5 rounded-lg border" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>👁 Preview</Link>}
       </div>
 
       {error && <div className="alert-error">{error}</div>}
@@ -125,36 +125,36 @@ export function ProjectEditForm({ project }: { project: any | null }) {
         <h3 className="text-sm font-medium">Basic Info</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="block text-xs" style={{ color: "hsl(0 0% 45%)" }}>Project Name *</label>
+            <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Project Name *</label>
             <input value={name} onChange={e => setName(e.target.value)} required placeholder="Alcazar Fund I" className={inp} style={inpStyle} />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-xs" style={{ color: "hsl(0 0% 45%)" }}>Slug (auto-generated)</label>
+            <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Slug (auto-generated)</label>
             <input value={slug} onChange={e => setSlug(e.target.value)} placeholder="alcazar-fund-i" className={inp} style={inpStyle} />
           </div>
         </div>
         <div className="space-y-1.5">
-          <label className="block text-xs" style={{ color: "hsl(0 0% 45%)" }}>Summary (shown on cards)</label>
+          <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Summary (shown on cards)</label>
           <input value={summary} onChange={e => setSummary(e.target.value)} placeholder="One-sentence description…" className={inp} style={inpStyle} />
         </div>
         <div className="space-y-1.5">
-          <label className="block text-xs" style={{ color: "hsl(0 0% 45%)" }}>Description (shown after access)</label>
+          <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Description (shown after access)</label>
           <textarea value={description} onChange={e => setDescription(e.target.value)} rows={5} className={inp} style={{ ...inpStyle, resize: "none" }} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-1.5">
-            <label className="block text-xs" style={{ color: "hsl(0 0% 45%)" }}>Sector</label>
+            <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Sector</label>
             <select value={sector} onChange={e => setSector(e.target.value)} className={inp} style={{ ...inpStyle, appearance: "auto" }}>
               <option value="">Select…</option>
               {SECTORS.map(s => <option key={s}>{s}</option>)}
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="block text-xs" style={{ color: "hsl(0 0% 45%)" }}>Country</label>
+            <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Country</label>
             <input value={country} onChange={e => setCountry(e.target.value)} placeholder="UAE" className={inp} style={inpStyle} />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-xs" style={{ color: "hsl(0 0% 45%)" }}>Status</label>
+            <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Status</label>
             <select value={status} onChange={e => setStatus(e.target.value)} className={inp} style={{ ...inpStyle, appearance: "auto" }}>
               {STATUSES.map(s => <option key={s}>{s}</option>)}
             </select>
@@ -177,20 +177,20 @@ export function ProjectEditForm({ project }: { project: any | null }) {
             ["Closing Date", closingDate, setClosingDate, "date", ""],
           ].map(([label, val, setter, type, ph]: any) => (
             <div key={label} className="space-y-1.5">
-              <label className="block text-xs" style={{ color: "hsl(0 0% 45%)" }}>{label}</label>
+              <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>{label}</label>
               <input type={type} value={val} onChange={e => setter(e.target.value)} placeholder={ph} className={inp} style={inpStyle} />
             </div>
           ))}
           <div className="space-y-1.5">
-            <label className="block text-xs" style={{ color: "hsl(0 0% 45%)" }}>Risk</label>
+            <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Risk</label>
             <select value={riskLevel} onChange={e => setRiskLevel(e.target.value)} className={inp} style={{ ...inpStyle, appearance: "auto" }}>
               <option value="">Select…</option>
               {RISKS.map(r => <option key={r}>{r}</option>)}
             </select>
           </div>
         </div>
-        <div className="pt-2 border-t space-y-2" style={{ borderColor: "hsl(0 0% 10%)" }}>
-          <p className="text-xs" style={{ color: "hsl(0 0% 40%)" }}>Show on public teaser:</p>
+        <div className="pt-2 border-t space-y-2" style={{ borderColor: "hsl(var(--border))" }}>
+          <p className="text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Show on public teaser:</p>
           <div className="flex gap-6">
             <Toggle value={pmIrr} onChange={() => setPmIrr(!pmIrr)} label="Show IRR" />
             <Toggle value={pmTicket} onChange={() => setPmTicket(!pmTicket)} label="Show Min. Ticket" />
@@ -210,7 +210,7 @@ export function ProjectEditForm({ project }: { project: any | null }) {
           <Toggle value={notifyOnOpen}  onChange={() => setNotifyOnOpen(!notifyOnOpen)}   label="Notify on first document open" />
         </div>
         <div className="space-y-1.5">
-          <label className="block text-xs" style={{ color: "hsl(0 0% 45%)" }}>Sort order (lower = first)</label>
+          <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Sort order (lower = first)</label>
           <input type="number" value={sortOrder} onChange={e => setSortOrder(e.target.value)} className={inp} style={{ ...inpStyle, maxWidth: "120px" }} />
         </div>
       </section>
@@ -220,13 +220,13 @@ export function ProjectEditForm({ project }: { project: any | null }) {
         <h3 className="text-sm font-medium">White-Label</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="block text-xs" style={{ color: "hsl(0 0% 45%)" }}>Portal name</label>
+            <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Portal name</label>
             <input value={brandName} onChange={e => setBrandName(e.target.value)} placeholder="Alcazar Capital" className={inp} style={inpStyle} />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-xs" style={{ color: "hsl(0 0% 45%)" }}>Brand color</label>
+            <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Brand color</label>
             <div className="flex gap-2">
-              <input type="color" value={brandColor || "#ffffff"} onChange={e => setBrandColor(e.target.value)} className="h-10 w-10 rounded-lg cursor-pointer" style={{ border: "1px solid hsl(0 0% 15%)" }} />
+              <input type="color" value={brandColor || "#ffffff"} onChange={e => setBrandColor(e.target.value)} className="h-10 w-10 rounded-lg cursor-pointer" style={{ border: "1px solid hsl(var(--border))" }} />
               <input value={brandColor} onChange={e => setBrandColor(e.target.value)} placeholder="#ffffff" className={inp} style={inpStyle} />
             </div>
           </div>
@@ -235,7 +235,7 @@ export function ProjectEditForm({ project }: { project: any | null }) {
 
       {/* Highlights */}
       <section className={section} style={sectionStyle}>
-        <h3 className="text-sm font-medium">Key Highlights <span style={{ color: "hsl(0 0% 40%)", fontWeight: 400 }}>(one per line)</span></h3>
+        <h3 className="text-sm font-medium">Key Highlights <span style={{ color: "hsl(var(--text-subtle))", fontWeight: 400 }}>(one per line)</span></h3>
         <textarea value={highlights} onChange={e => setHighlights(e.target.value)} rows={5} className={inp} style={{ ...inpStyle, resize: "none", fontFamily: "monospace", fontSize: "13px" }} placeholder="Target IRR of 18% per annum&#10;Minimum investment: $250,000" />
       </section>
 
@@ -252,14 +252,14 @@ export function ProjectEditForm({ project }: { project: any | null }) {
       </section>
 
       <div className="flex items-center gap-4">
-        <button type="submit" disabled={loading} className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium" style={{ background: "hsl(0 0% 98%)", color: "hsl(0 0% 5%)", opacity: loading ? 0.7 : 1 }}>
+        <button type="submit" disabled={loading} className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium" style={{ background: "hsl(var(--text))", color: "hsl(var(--text))", opacity: loading ? 0.7 : 1 }}>
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {isNew ? "Create Project" : "Save Changes"}
         </button>
         {!isNew && (
           <>
-            <Link href={`/admin/documents?project=${project.id}`} className="text-sm px-4 py-2 rounded-lg border" style={{ borderColor: "hsl(0 0% 16%)", color: "hsl(0 0% 55%)" }}>Manage Documents</Link>
-            <Link href={`/admin/investors?project=${project.id}`} className="text-sm px-4 py-2 rounded-lg border" style={{ borderColor: "hsl(0 0% 16%)", color: "hsl(0 0% 55%)" }}>Manage Investors</Link>
+            <Link href={`/admin/documents?project=${project.id}`} className="text-sm px-4 py-2 rounded-lg border" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>Manage Documents</Link>
+            <Link href={`/admin/investors?project=${project.id}`} className="text-sm px-4 py-2 rounded-lg border" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>Manage Investors</Link>
           </>
         )}
       </div>

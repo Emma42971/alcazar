@@ -17,7 +17,7 @@ export default async function DocumentsPage({ searchParams }: { searchParams: Pr
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="text-2xl font-semibold" style={{ fontFamily: "'DM Serif Display',serif" }}>Documents</h1>
         {projects.length > 1 && (
-          <select defaultValue={projectId} onChange={e => window.location.href = `/admin/documents?project=${e.target.value}`} className="rounded-lg px-3 py-1.5 text-sm" style={{ background: "hsl(0 0% 9%)", border: "1px solid hsl(0 0% 15%)", color: "hsl(0 0% 70%)", appearance: "auto" }}>
+          <select defaultValue={projectId} onChange={e => window.location.href = `/admin/documents?project=${e.target.value}`} className="rounded-lg px-3 py-1.5 text-sm" style={{ background: "hsl(var(--surface-raised))", border: "1px solid hsl(var(--border))", color: "hsl(var(--text-subtle))", appearance: "auto" }}>
             {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
         )}

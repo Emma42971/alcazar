@@ -87,7 +87,7 @@ export function UpdatesClient() {
           <div className="px-4 py-2 border-b text-xs font-medium" style={{ background: "hsl(var(--accent))", borderColor: "hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}>
             Build logs
           </div>
-          <div className="p-4 font-mono text-xs space-y-1 max-h-64 overflow-y-auto" style={{ background: "hsl(0 0% 3%)", color: "hsl(142 71% 55%)" }}>
+          <div className="p-4 font-mono text-xs space-y-1 max-h-64 overflow-y-auto" style={{ background: "hsl(var(--surface))", color: "hsl(142 71% 55%)" }}>
             {logs.map((l, i) => <div key={i}>{l}</div>)}
           </div>
         </div>

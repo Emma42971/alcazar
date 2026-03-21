@@ -30,17 +30,17 @@ export function InvestorDetailClient({ user, projects }: { user: any; projects: 
   return (
     <div className="p-4 sm:p-8 space-y-8 max-w-3xl">
       <div className="flex items-center gap-3">
-        <Link href="/admin/investors" className="text-xs px-2.5 py-1.5 rounded-lg border" style={{ borderColor: "hsl(0 0% 16%)", color: "hsl(0 0% 55%)" }}>← Back</Link>
+        <Link href="/admin/investors" className="text-xs px-2.5 py-1.5 rounded-lg border" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>← Back</Link>
         <h1 className="text-xl font-semibold" style={{ fontFamily: "'DM Serif Display',serif" }}>{name}</h1>
         <span className={`badge text-xs badge-${user.status === "APPROVED" ? "approved" : user.status === "REJECTED" ? "rejected" : "pending"}`}>{user.status.replace("_"," ")}</span>
       </div>
 
       {/* Profile */}
-      <div className="rounded-xl border p-5 space-y-3" style={{ background: "hsl(0 0% 5.5%)", borderColor: "hsl(0 0% 11%)" }}>
+      <div className="rounded-xl border p-5 space-y-3" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
         <h3 className="text-sm font-medium">Profile</h3>
         <div className="grid grid-cols-2 gap-3 text-sm">
           {[["Email", user.email], ["Phone", user.profile?.phone], ["Company", user.profile?.companyName], ["Country", user.profile?.country], ["Investor Type", user.profile?.investorType], ["Est. Ticket", user.profile?.estTicket]].map(([k,v]) => v ? (
-            <div key={k}><p className="text-xs" style={{ color: "hsl(0 0% 40%)" }}>{k}</p><p style={{ color: "hsl(0 0% 80%)" }}>{v}</p></div>
+            <div key={k}><p className="text-xs" style={{ color: "hsl(var(--text-subtle))" }}>{k}</p><p style={{ color: "hsl(var(--text))" }}>{v}</p></div>
           ) : null)}
         </div>
       </div>
@@ -58,30 +58,30 @@ export function InvestorDetailClient({ user, projects }: { user: any; projects: 
       )}
 
       {/* Project access */}
-      <div className="rounded-xl border p-5 space-y-4" style={{ background: "hsl(0 0% 5.5%)", borderColor: "hsl(0 0% 11%)" }}>
+      <div className="rounded-xl border p-5 space-y-4" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
         <h3 className="text-sm font-medium">Project Access</h3>
-        {user.accessGrants.length === 0 ? <p className="text-xs" style={{ color: "hsl(0 0% 40%)" }}>No access granted yet.</p> : (
+        {user.accessGrants.length === 0 ? <p className="text-xs" style={{ color: "hsl(var(--text-subtle))" }}>No access granted yet.</p> : (
           <div className="space-y-2">
             {user.accessGrants.map((g: any) => (
               <div key={g.id} className="flex items-center justify-between">
-                <span className="text-sm" style={{ color: "hsl(0 0% 75%)" }}>{g.project.name}</span>
+                <span className="text-sm" style={{ color: "hsl(var(--text))" }}>{g.project.name}</span>
                 <button onClick={() => revokeAccess(g.project.id)} className="text-xs" style={{ color: "hsl(0 72% 55%)" }}>Revoke</button>
               </div>
             ))}
           </div>
         )}
-        <div className="flex gap-2 pt-2 border-t" style={{ borderColor: "hsl(0 0% 10%)" }}>
-          <select value={grantProject} onChange={e => setGrantProject(e.target.value)} className="flex-1 rounded-lg px-3 py-2 text-sm" style={{ background: "hsl(0 0% 9%)", border: "1px solid hsl(0 0% 15%)", color: "hsl(0 0% 70%)", appearance: "auto" }}>
+        <div className="flex gap-2 pt-2 border-t" style={{ borderColor: "hsl(var(--border))" }}>
+          <select value={grantProject} onChange={e => setGrantProject(e.target.value)} className="flex-1 rounded-lg px-3 py-2 text-sm" style={{ background: "hsl(var(--surface-raised))", border: "1px solid hsl(var(--border))", color: "hsl(var(--text-subtle))", appearance: "auto" }}>
             <option value="">Grant access to project…</option>
             {projects.filter(p => !user.accessGrants.find((g: any) => g.project.id === p.id)).map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
-          <button onClick={grantAccess} disabled={!grantProject || loading} className="px-3 py-2 rounded-lg text-sm font-medium" style={{ background: "hsl(0 0% 90%)", color: "hsl(0 0% 5%)", opacity: (!grantProject || loading) ? 0.5 : 1 }}>Grant</button>
+          <button onClick={grantAccess} disabled={!grantProject || loading} className="px-3 py-2 rounded-lg text-sm font-medium" style={{ background: "hsl(var(--text))", color: "hsl(var(--text))", opacity: (!grantProject || loading) ? 0.5 : 1 }}>Grant</button>
         </div>
       </div>
 
       {/* Activity */}
       {user.documentActivities.length > 0 && (
-        <div className="rounded-xl border p-5 space-y-3" style={{ background: "hsl(0 0% 5.5%)", borderColor: "hsl(0 0% 11%)" }}>
+        <div className="rounded-xl border p-5 space-y-3" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
           <h3 className="text-sm font-medium">Document Activity</h3>
           <div className="overflow-x-auto">
             <table className="data-table">
@@ -89,9 +89,9 @@ export function InvestorDetailClient({ user, projects }: { user: any; projects: 
               <tbody>
                 {user.documentActivities.map((a: any) => (
                   <tr key={a.id}>
-                    <td className="text-xs whitespace-nowrap" style={{ color: "hsl(0 0% 40%)" }}>{new Date(a.viewedAt).toLocaleString()}</td>
-                    <td className="text-sm" style={{ color: "hsl(0 0% 75%)" }}>{a.document.name}</td>
-                    <td className="text-xs" style={{ color: "hsl(0 0% 45%)" }}>{a.project.name}</td>
+                    <td className="text-xs whitespace-nowrap" style={{ color: "hsl(var(--text-subtle))" }}>{new Date(a.viewedAt).toLocaleString()}</td>
+                    <td className="text-sm" style={{ color: "hsl(var(--text))" }}>{a.document.name}</td>
+                    <td className="text-xs" style={{ color: "hsl(var(--text-subtle))" }}>{a.project.name}</td>
                     <td><span className={`badge text-xs ${a.event === "open" ? "badge-new" : "badge-read"}`}>{a.event}</span></td>
                   </tr>
                 ))}

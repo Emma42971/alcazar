@@ -33,16 +33,16 @@ export default async function ProjectsPage({
   })
 
   return (
-    <div className="min-h-screen" style={{ background: "hsl(0 0% 3.5%)" }}>
+    <div className="min-h-screen" style={{ background: "hsl(var(--surface))" }}>
       {/* Header */}
-      <header className="h-14 flex items-center justify-between px-6 border-b" style={{ borderColor: "hsl(0 0% 10%)" }}>
-        <span className="text-sm font-medium" style={{ color: "hsl(0 0% 70%)" }}>Investor Portal</span>
+      <header className="h-14 flex items-center justify-between px-6 border-b" style={{ borderColor: "hsl(var(--border))" }}>
+        <span className="text-sm font-medium" style={{ color: "hsl(var(--text-subtle))" }}>Investor Portal</span>
         {user ? (
-          <Link href={user.role === "ADMIN" ? "/admin" : "/dashboard"} className="text-sm" style={{ color: "hsl(0 0% 50%)" }}>
+          <Link href={user.role === "ADMIN" ? "/admin" : "/dashboard"} className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>
             Dashboard →
           </Link>
         ) : (
-          <Link href="/" className="text-xs px-3 py-1.5 rounded-lg text-sm font-medium" style={{ background: "hsl(0 0% 98%)", color: "hsl(0 0% 5%)" }}>
+          <Link href="/" className="text-xs px-3 py-1.5 rounded-lg text-sm font-medium" style={{ background: "hsl(var(--surface))", color: "hsl(var(--text-subtle))" }}>
             Sign In
           </Link>
         )}
@@ -51,7 +51,7 @@ export default async function ProjectsPage({
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12 space-y-8">
         <div>
           <h1 className="text-3xl" style={{ fontFamily: "'DM Serif Display',serif" }}>Investment Opportunities</h1>
-          <p className="mt-2 text-sm" style={{ color: "hsl(0 0% 45%)" }}>
+          <p className="mt-2 text-sm" style={{ color: "hsl(var(--text-subtle))" }}>
             Carefully selected projects for qualified investors.
           </p>
         </div>
@@ -63,8 +63,8 @@ export default async function ProjectsPage({
               href="/projects"
               className="text-xs px-3 py-1.5 rounded-full border transition-colors"
               style={{
-                borderColor: !sector ? "hsl(0 0% 70%)" : "hsl(0 0% 18%)",
-                color: !sector ? "hsl(0 0% 90%)" : "hsl(0 0% 45%)",
+                borderColor: !sector ? "hsl(var(--accent))" : "hsl(var(--border))",
+                color: !sector ? "hsl(var(--accent))" : "hsl(var(--text-subtle))",
               }}
             >
               All
@@ -75,8 +75,8 @@ export default async function ProjectsPage({
                 href={`/projects?sector=${encodeURIComponent(s)}`}
                 className="text-xs px-3 py-1.5 rounded-full border transition-colors"
                 style={{
-                  borderColor: sector === s ? "hsl(0 0% 70%)" : "hsl(0 0% 18%)",
-                  color: sector === s ? "hsl(0 0% 90%)" : "hsl(0 0% 45%)",
+                  borderColor: sector === s ? "hsl(var(--accent))" : "hsl(var(--border))",
+                  color: sector === s ? "hsl(var(--accent))" : "hsl(var(--text-subtle))",
                 }}
               >
                 {s}
@@ -87,7 +87,7 @@ export default async function ProjectsPage({
 
         {/* Grid */}
         {projects.length === 0 ? (
-          <div className="text-center py-20" style={{ color: "hsl(0 0% 30%)" }}>
+          <div className="text-center py-20" style={{ color: "hsl(var(--text-subtle))" }}>
             <div className="text-5xl mb-4">📂</div>
             <p className="text-sm">No projects available at the moment.</p>
           </div>

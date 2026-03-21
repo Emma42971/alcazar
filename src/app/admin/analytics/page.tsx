@@ -42,11 +42,11 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
         <h1 className="text-2xl font-semibold" style={{ fontFamily: "'DM Serif Display',serif" }}>Analytics</h1>
         <div className="flex gap-2 flex-wrap">
           {projects.length > 1 && (
-            <select defaultValue={projectId} onChange={e => window.location.href = `/admin/analytics?project=${e.target.value}`} className="rounded-lg px-3 py-1.5 text-sm" style={{ background: "hsl(0 0% 9%)", border: "1px solid hsl(0 0% 15%)", color: "hsl(0 0% 70%)", appearance: "auto" }}>
+            <select defaultValue={projectId} onChange={e => window.location.href = `/admin/analytics?project=${e.target.value}`} className="rounded-lg px-3 py-1.5 text-sm" style={{ background: "hsl(var(--surface-raised))", border: "1px solid hsl(var(--border))", color: "hsl(var(--text-subtle))", appearance: "auto" }}>
               {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
           )}
-          {projectId && <a href={`/api/admin/audit?projectId=${projectId}`} target="_blank" className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: "hsl(0 0% 18%)", color: "hsl(0 0% 55%)" }}>📋 Audit Trail</a>}
+          {projectId && <a href={`/api/admin/audit?projectId=${projectId}`} target="_blank" className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: "hsl(var(--border-strong))", color: "hsl(var(--text-subtle))" }}>📋 Audit Trail</a>}
         </div>
       </div>
 
@@ -55,16 +55,16 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
         <AnalyticsChartsClient chartData={chartData} />
 
         {/* Engagement scores */}
-        <div className="rounded-xl border p-5 space-y-4" style={{ background: "hsl(0 0% 5.5%)", borderColor: "hsl(0 0% 11%)" }}>
+        <div className="rounded-xl border p-5 space-y-4" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
           <h3 className="text-sm font-medium">Investor Engagement</h3>
-          {investorScores.length === 0 ? <p className="text-sm" style={{ color: "hsl(0 0% 35%)" }}>No investors with access.</p> : (
+          {investorScores.length === 0 ? <p className="text-sm" style={{ color: "hsl(var(--text-muted))" }}>No investors with access.</p> : (
             <div className="space-y-3">
               {investorScores.map(inv => (
                 <div key={inv.userId} className="flex items-center gap-3">
-                  <span className="text-xs flex-1 truncate" style={{ color: "hsl(0 0% 70%)" }}>{inv.name}</span>
+                  <span className="text-xs flex-1 truncate" style={{ color: "hsl(var(--text-subtle))" }}>{inv.name}</span>
                   <div className="flex items-center gap-2 shrink-0">
-                    <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: "hsl(0 0% 12%)" }}>
-                      <div className="h-full rounded-full transition-all" style={{ width: `${inv.score}%`, background: inv.score >= 70 ? "hsl(142 71% 45%)" : inv.score >= 35 ? "hsl(38 92% 50%)" : "hsl(0 0% 30%)" }} />
+                    <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: "hsl(var(--bg-subtle))" }}>
+                      <div className="h-full rounded-full transition-all" style={{ width: `${inv.score}%`, background: inv.score >= 70 ? "hsl(142 71% 45%)" : inv.score >= 35 ? "hsl(38 92% 50%)" : "hsl(var(--border-strong))" }} />
                     </div>
                     <span className={`badge text-xs ${inv.score >= 70 ? "badge-approved" : inv.score >= 35 ? "badge-pending" : "badge-read"}`}>
                       {engagementLabel(inv.score)} {inv.score}
@@ -78,8 +78,8 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
       </div>
 
       {/* Recent activity table */}
-      <div className="rounded-xl border overflow-hidden" style={{ borderColor: "hsl(0 0% 11%)" }}>
-        <div className="px-5 py-4 border-b" style={{ borderColor: "hsl(0 0% 10%)" }}>
+      <div className="rounded-xl border overflow-hidden" style={{ borderColor: "hsl(var(--border))" }}>
+        <div className="px-5 py-4 border-b" style={{ borderColor: "hsl(var(--border))" }}>
           <h3 className="text-sm font-medium">Recent Activity</h3>
         </div>
         <div className="overflow-x-auto">
@@ -90,14 +90,14 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
                 const name = a.user.profile ? `${a.user.profile.firstName} ${a.user.profile.lastName}` : a.user.email
                 return (
                   <tr key={a.id}>
-                    <td className="text-xs whitespace-nowrap" style={{ color: "hsl(0 0% 40%)" }}>{new Date(a.viewedAt).toLocaleString()}</td>
-                    <td className="text-sm" style={{ color: "hsl(0 0% 80%)" }}>{name}</td>
-                    <td className="text-sm" style={{ color: "hsl(0 0% 65%)" }}>{a.document.name}</td>
-                    <td className="text-xs" style={{ color: "hsl(0 0% 45%)" }}>{a.durationMs ? `${Math.round(a.durationMs / 1000)}s` : "—"}</td>
+                    <td className="text-xs whitespace-nowrap" style={{ color: "hsl(var(--text-subtle))" }}>{new Date(a.viewedAt).toLocaleString()}</td>
+                    <td className="text-sm" style={{ color: "hsl(var(--text))" }}>{name}</td>
+                    <td className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>{a.document.name}</td>
+                    <td className="text-xs" style={{ color: "hsl(var(--text-subtle))" }}>{a.durationMs ? `${Math.round(a.durationMs / 1000)}s` : "—"}</td>
                   </tr>
                 )
               })}
-              {recentActivity.length === 0 && <tr><td colSpan={4} className="text-center py-8 text-sm" style={{ color: "hsl(0 0% 35%)" }}>No activity yet.</td></tr>}
+              {recentActivity.length === 0 && <tr><td colSpan={4} className="text-center py-8 text-sm" style={{ color: "hsl(var(--text-muted))" }}>No activity yet.</td></tr>}
             </tbody>
           </table>
         </div>
