@@ -1,0 +1,419 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Enums ──────────────────────────────────────────────────────
+
+enum UserRole {
+  ADMIN
+  INVESTOR
+}
+
+enum UserStatus {
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+}
+
+enum NdaStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum InquiryStatus {
+  NEW
+  READ
+  REPLIED
+}
+
+enum PipelineStage {
+  LEAD
+  NDA_PENDING
+  UNDER_REVIEW
+  COMMITTED
+  CLOSED
+}
+
+enum QaCategory {
+  GENERAL
+  LEGAL
+  FINANCIAL
+  TECHNICAL
+}
+
+// ── Users ──────────────────────────────────────────────────────
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  role      UserRole   @default(INVESTOR)
+  status    UserStatus @default(PENDING_APPROVAL)
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  profile             InvestorProfile?
+  ndaRequests         NdaRequest[]
+  accessGrants        AccessGrant[]
+  documentActivities  DocumentActivity[]
+  contactInquiries    ContactInquiry[]
+  projectQuestions    ProjectQuestion[]
+  uploadedDocuments   Document[]          @relation("UploadedBy")
+  passwordResetTokens PasswordResetToken[]
+  loginOtps           LoginOtp[]
+  invitations         ProjectInvitation[]
+  investorNotes       InvestorNote[]
+  investorTags        InvestorTagAssign[]
+
+  @@map("users")
+}
+
+model InvestorProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique @map("user_id")
+  firstName    String   @map("first_name")
+  lastName     String   @map("last_name")
+  email        String
+  phone        String
+  companyName  String?  @map("company_name")
+  country      String?
+  city         String?
+  jobTitle     String?  @map("job_title")
+  investorType String?  @map("investor_type")
+  estTicket    String?  @map("est_ticket")
+  notes        String?  @db.Text
+  pipelineStage PipelineStage @default(LEAD) @map("pipeline_stage")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("investor_profiles")
+}
+
+// ── Projects ───────────────────────────────────────────────────
+
+model Project {
+  id               String   @id @default(cuid())
+  name             String
+  slug             String   @unique
+  summary          String?  @db.Text
+  description      String?  @db.LongText
+  country          String?
+  sector           String?
+  status           String   @default("Open")
+  minTicket        Int?     @map("min_ticket")
+  irrTargetBps     Int?     @map("irr_target_bps")
+  investmentType   String?  @map("investment_type")
+  targetRaise      BigInt?  @map("target_raise")
+  raisedAmount     BigInt?  @map("raised_amount")
+  currency         String   @default("USD")
+  expectedDuration String?  @map("expected_duration")
+  riskLevel        String?  @map("risk_level")
+  highlights       Json?
+  ndaText          String?  @map("nda_text")  @db.LongText
+  closingDate      DateTime? @map("closing_date")
+  isFeatured       Boolean  @default(false)   @map("is_featured")
+  sortOrder        Int      @default(0)        @map("sort_order")
+
+  // Visibilité
+  teaserPublic     Boolean  @default(false)   @map("teaser_public")
+  seoIndexable     Boolean  @default(false)   @map("seo_indexable")
+  ndaRequired      Boolean  @default(true)    @map("nda_required")
+
+  // Visuels
+  coverImage       String?  @map("cover_image")  @db.Text
+  logoImage        String?  @map("logo_image")   @db.Text
+  videoUrl         String?  @map("video_url")
+  gallery          Json?
+
+  // White-label
+  brandColor       String?  @map("brand_color")
+  brandLogo        String?  @map("brand_logo")   @db.Text
+  brandName        String?  @map("brand_name")
+
+  // Métriques
+  publicMetrics    Json?    @map("public_metrics")
+
+  // Notifications & sécurité
+  notifyOnOpen     Boolean  @default(false)   @map("notify_on_open")
+  twoFaRequired    Boolean  @default(false)   @map("two_fa_required")
+
+  // Accès par défaut (90 jours si null = illimité)
+  defaultAccessDays Int?    @map("default_access_days")
+
+  createdAt        DateTime @default(now())   @map("created_at")
+  updatedAt        DateTime @updatedAt        @map("updated_at")
+
+  ndaRequests        NdaRequest[]
+  accessGrants       AccessGrant[]
+  documents          Document[]
+  documentActivities DocumentActivity[]
+  contactInquiries   ContactInquiry[]
+  projectQuestions   ProjectQuestion[]
+  invitations        ProjectInvitation[]
+  updates            ProjectUpdate[]
+
+  @@map("projects")
+}
+
+// ── NDA ────────────────────────────────────────────────────────
+
+model NdaRequest {
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  projectId       String    @map("project_id")
+  status          NdaStatus @default(PENDING)
+  signerFullName  String?   @map("signer_full_name")
+  signerIp        String?   @map("signer_ip")
+  signatureType   String?   @map("signature_type") // "canvas" | "typed"
+  signatureData   String?   @map("signature_data") @db.LongText // base64 image ou texte
+  signedAt        DateTime? @map("signed_at")
+  signedPdfPath   String?   @map("signed_pdf_path") @db.Text
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("nda_requests")
+}
+
+model AccessGrant {
+  id            String        @id @default(cuid())
+  userId        String        @map("user_id")
+  projectId     String        @map("project_id")
+  grantedAt     DateTime      @default(now()) @map("granted_at")
+  expiresAt     DateTime?     @map("expires_at")
+  revokedAt     DateTime?     @map("revoked_at")
+  pipelineStage PipelineStage @default(UNDER_REVIEW) @map("pipeline_stage")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@map("access_grants")
+}
+
+model ProjectInvitation {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  projectId   String   @map("project_id")
+  invitedById String?  @map("invited_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@map("project_invitations")
+}
+
+// ── Documents ──────────────────────────────────────────────────
+
+model Document {
+  id           String   @id @default(cuid())
+  projectId    String   @map("project_id")
+  name         String
+  fileType     String   @map("file_type")
+  filePath     String   @map("file_path") @db.Text
+  sizeBytes    Int?     @map("size_bytes")
+  version      Int      @default(1)
+  supersededBy String?  @map("superseded_by")
+  uploadedById String?  @map("uploaded_by_id")
+  // Permissions par défaut (overridables par DocumentPermission)
+  allowView    Boolean  @default(true)  @map("allow_view")
+  allowDownload Boolean @default(true)  @map("allow_download")
+  allowPrint   Boolean  @default(false) @map("allow_print")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  project     Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  uploadedBy  User?                @relation("UploadedBy", fields: [uploadedById], references: [id])
+  activities  DocumentActivity[]
+  versions    DocumentVersion[]
+  permissions DocumentPermission[]
+
+  @@map("documents")
+}
+
+model DocumentPermission {
+  id           String  @id @default(cuid())
+  documentId   String  @map("document_id")
+  userId       String  @map("user_id")
+  allowView    Boolean @default(true)  @map("allow_view")
+  allowDownload Boolean @default(true) @map("allow_download")
+  allowPrint   Boolean @default(false) @map("allow_print")
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, userId])
+  @@map("document_permissions")
+}
+
+model DocumentVersion {
+  id         String   @id @default(cuid())
+  documentId String   @map("document_id")
+  version    Int
+  filePath   String   @map("file_path") @db.Text
+  sizeBytes  Int?     @map("size_bytes")
+  note       String?
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+  uploadedBy String?  @map("uploaded_by")
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@map("document_versions")
+}
+
+model DocumentActivity {
+  id         String   @id @default(cuid())
+  documentId String   @map("document_id")
+  userId     String   @map("user_id")
+  projectId  String   @map("project_id")
+  event      String   // open | close | download | print
+  durationMs Int?     @map("duration_ms")
+  ipHash     String?  @map("ip_hash")
+  country    String?
+  city       String?
+  userAgent  String?  @map("user_agent") @db.Text
+  viewedAt   DateTime @default(now()) @map("viewed_at")
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project  Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("document_activities")
+}
+
+// ── Project Updates ────────────────────────────────────────────
+
+model ProjectUpdate {
+  id        String   @id @default(cuid())
+  projectId String   @map("project_id")
+  title     String
+  content   String   @db.LongText
+  isPublic  Boolean  @default(true) @map("is_public")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_updates")
+}
+
+// ── CRM ────────────────────────────────────────────────────────
+
+model InvestorNote {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  createdBy String?  @map("created_by")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("investor_notes")
+}
+
+model InvestorTag {
+  id    String @id @default(cuid())
+  name  String @unique
+  color String @default("#2563EB")
+
+  assignments InvestorTagAssign[]
+
+  @@map("investor_tags")
+}
+
+model InvestorTagAssign {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+  tagId  String @map("tag_id")
+
+  user User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tag  InvestorTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tagId])
+  @@map("investor_tag_assigns")
+}
+
+// ── Communication ──────────────────────────────────────────────
+
+model ContactInquiry {
+  id         String        @id @default(cuid())
+  userId     String        @map("user_id")
+  projectId  String?       @map("project_id")
+  ticketSize String?       @map("ticket_size")
+  message    String?       @db.Text
+  status     InquiryStatus @default(NEW)
+  adminNote  String?       @map("admin_note") @db.Text
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@map("contact_inquiries")
+}
+
+model ProjectQuestion {
+  id          String     @id @default(cuid())
+  projectId   String     @map("project_id")
+  userId      String     @map("user_id")
+  question    String     @db.Text
+  answer      String?    @db.Text
+  category    QaCategory @default(GENERAL)
+  isShared    Boolean    @default(false) @map("is_shared")
+  answeredAt  DateTime?  @map("answered_at")
+  answeredBy  String?    @map("answered_by")
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("project_questions")
+}
+
+// ── Auth helpers ───────────────────────────────────────────────
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model LoginOtp {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  code      String   @db.Char(6)
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("login_otps")
+}
+
+// ── Site ───────────────────────────────────────────────────────
+
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
