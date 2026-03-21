@@ -7,6 +7,7 @@ COPY package.json package-lock.json* ./
 COPY prisma ./prisma
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
 RUN npm install --frozen-lockfile 2>/dev/null || npm install
+RUN npx prisma generate || true
 
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
@@ -23,13 +24,13 @@ ENV RESEND_FROM_EMAIL=noreply@example.com
 ENV ADMIN_EMAIL=admin@example.com
 ENV UPLOAD_DIR=/app/uploads
 RUN mkdir -p public
+# Regénérer prisma client avec le bon schéma avant le build
+RUN npx prisma generate || true
 RUN npx next build
 
 FROM base AS runner
 WORKDIR /app
-# Git + Docker CLI pour Admin → Updates
 RUN apk add --no-cache git docker-cli
-# Fix git safe directory — persistant dans l'image
 RUN git config --global --add safe.directory /docker/alcazar
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs

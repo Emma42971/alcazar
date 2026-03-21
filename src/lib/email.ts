@@ -108,3 +108,44 @@ export async function sendNewDocumentEmail(to: string, firstName: string, projec
     <p>Best regards,<br><strong>The Alcazar Team</strong></p>`
   await resend.emails.send({ from: FROM, to, subject: `New document available — ${projectName}`, html: baseTemplate(content, "New Document Available") })
 }
+
+// Generic sendEmail dispatcher — backward compat
+export async function sendEmail(opts: {
+  type: string
+  email?: string
+  token?: string
+  code?: string
+  name?: string
+  project?: string
+  message?: string
+  ticket?: string
+  investorName?: string
+  docName?: string
+  projectName?: string
+}) {
+  const to = opts.email ?? ""
+  try {
+    if (opts.type === "reset-password" && opts.token) {
+      const link = `${PORTAL}/auth/reset-password?token=${opts.token}`
+      const content = `<p>Click the link below to reset your password:</p><a href="${link}" class="btn">Reset Password →</a><p>This link expires in 1 hour.</p>`
+      await resend.emails.send({ from: FROM, to, subject: "Reset your password — Alcazar Capital", html: baseTemplate(content, "Password Reset") })
+    } else if (opts.type === "otp-code" && opts.code) {
+      const content = `<p>Your verification code is:</p><div style="font-size:32px;font-weight:700;letter-spacing:8px;text-align:center;padding:20px 0;color:hsl(152 57% 38%)">${opts.code}</div><p>This code expires in 10 minutes.</p>`
+      await resend.emails.send({ from: FROM, to, subject: "Your verification code — Alcazar Capital", html: baseTemplate(content, "Verification Code") })
+    } else if (opts.type === "new-inquiry") {
+      const adminEmail = process.env.ADMIN_EMAIL
+      if (adminEmail) {
+        const c = `<p>New inquiry from <strong>${opts.name}</strong> (${to})${opts.project ? ` about <strong>${opts.project}</strong>` : ""}.</p>${opts.message ? `<div class="highlight"><p>${opts.message}</p></div>` : ""}<a href="${PORTAL}/admin/inquiries" class="btn">View Inquiries →</a>`
+        await resend.emails.send({ from: FROM, to: adminEmail, subject: "New investor inquiry", html: baseTemplate(c, "New Inquiry") })
+      }
+    } else if (opts.type === "first-document-open") {
+      const adminEmail = process.env.ADMIN_EMAIL
+      if (adminEmail) {
+        const c = `<p><strong>${opts.investorName}</strong> just opened <strong>${opts.docName}</strong> in the <strong>${opts.projectName}</strong> data room for the first time.</p><a href="${PORTAL}/admin/analytics" class="btn">View Analytics →</a>`
+        await resend.emails.send({ from: FROM, to: adminEmail, subject: `Document opened — ${opts.investorName}`, html: baseTemplate(c, "Document Activity") })
+      }
+    }
+  } catch(e) {
+    console.error("sendEmail error:", e)
+  }
+}
