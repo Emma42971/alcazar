@@ -1,43 +1,31 @@
-// Argon2id — winner of Password Hashing Competition
-// Much more resistant to GPU/ASIC attacks than bcrypt
-// Falls back to bcrypt for backward compatibility
-
-let argon2: any = null
-
-async function getArgon2() {
-  if (!argon2) {
-    try {
-      argon2 = await import("@node-rs/argon2")
-    } catch {
-      // Fallback to bcryptjs if argon2 not available
-      return null
-    }
-  }
-  return argon2
-}
+// Password hashing — Argon2id via @node-rs/argon2 (Node.js only, NOT Edge Runtime)
+// This file must never be imported by middleware.ts
 
 export async function hashPassword(password: string): Promise<string> {
-  const a2 = await getArgon2()
-  if (a2) {
-    return a2.hash(password, {
-      algorithm: 2,    // Argon2id
+  try {
+    // @node-rs/argon2 — GPU-resistant, requires Node.js runtime
+    const argon2 = await import("@node-rs/argon2")
+    return argon2.hash(password, {
+      algorithm: 2,      // Argon2id
       memoryCost: 65536, // 64MB
       timeCost: 3,
       parallelism: 4,
     })
+  } catch {
+    // Fallback to bcryptjs (also Node.js only)
+    const bcrypt = await import("bcryptjs")
+    return bcrypt.hash(password, 12)
   }
-  // Fallback
-  const bcrypt = await import("bcryptjs")
-  return bcrypt.hash(password, 12)
 }
 
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  // Detect hash type
   if (hash.startsWith("$argon2")) {
-    const a2 = await getArgon2()
-    if (a2) return a2.verify(hash, password)
+    try {
+      const argon2 = await import("@node-rs/argon2")
+      return argon2.verify(hash, password)
+    } catch {}
   }
-  // bcrypt fallback (for existing users)
+  // bcrypt fallback for existing users
   const bcrypt = await import("bcryptjs")
   return bcrypt.compare(password, hash)
 }
