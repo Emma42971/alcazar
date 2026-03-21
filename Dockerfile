@@ -6,8 +6,7 @@ FROM base AS deps
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
-# Install with legacy peer deps for compatibility
-RUN npm install --legacy-peer-deps 2>/dev/null || npm install --force
+RUN npm install --legacy-peer-deps || npm install --force || npm install
 RUN npx prisma generate
 
 FROM base AS builder
