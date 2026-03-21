@@ -2,14 +2,14 @@ import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
-import { verifyPassword } from "@/lib/password"
+import bcrypt from "bcryptjs"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
-    maxAge:   8 * 60 * 60,    // 8 hours
-    updateAge: 60 * 60,        // Refresh every 1 hour
+    maxAge: 8 * 60 * 60,
+    updateAge: 60 * 60,
   },
   cookies: {
     sessionToken: {
@@ -37,9 +37,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         })
         if (!user) return null
 
-        const valid = await verifyPassword(credentials.password as string, user.password)
+        // bcrypt only in auth.ts — argon2 only in API routes via password.ts
+        const valid = await bcrypt.compare(credentials.password as string, user.password)
         if (!valid) return null
-
         if (user.status === "REJECTED") return null
 
         return {
@@ -59,7 +59,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role   = (user as any).role
         token.status = (user as any).status
       }
-      // Refresh user data from DB on each token update
       if (token.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
@@ -81,9 +80,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session
     }
   },
-  pages: {
-    signIn:  "/",
-    signOut: "/",
-    error:   "/",
-  }
+  pages: { signIn: "/", signOut: "/", error: "/" }
 })
