@@ -27,8 +27,10 @@ RUN npx next build
 
 FROM base AS runner
 WORKDIR /app
-# Installer git et docker CLI pour les updates depuis l'admin
+# Git + Docker CLI pour Admin → Updates
 RUN apk add --no-cache git docker-cli
+# Fix git safe directory — persistant dans l'image
+RUN git config --global --add safe.directory /docker/alcazar
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
