@@ -9,16 +9,61 @@ datasource db {
 
 // ── Enums ──────────────────────────────────────────────────────
 
-enum UserRole        { ADMIN INVESTOR }
-enum UserStatus      { PENDING_APPROVAL APPROVED REJECTED }
-enum NdaStatus       { PENDING APPROVED REJECTED }
-enum InquiryStatus   { NEW READ REPLIED }
-enum PipelineStage   { LEAD NDA_PENDING UNDER_REVIEW COMMITTED CLOSED }
-enum QaCategory      { GENERAL LEGAL FINANCIAL TECHNICAL }
-enum QaStatus        { OPEN ANSWERED CLOSED REJECTED }
-enum DocLabel        { NONE CONFIDENTIAL DRAFT FINAL REVIEWED }
-enum DocStatus       { DRAFT PUBLISHED }
-enum ProjectLifecycle { PREPARATION LIVE LOCKED CLOSED }
+enum UserRole {
+  ADMIN
+  INVESTOR
+}
+enum UserStatus {
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+}
+enum NdaStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+enum InquiryStatus {
+  NEW
+  READ
+  REPLIED
+}
+enum PipelineStage {
+  LEAD
+  NDA_PENDING
+  UNDER_REVIEW
+  COMMITTED
+  CLOSED
+}
+enum QaCategory {
+  GENERAL
+  LEGAL
+  FINANCIAL
+  TECHNICAL
+}
+enum QaStatus {
+  OPEN
+  ANSWERED
+  CLOSED
+  REJECTED
+}
+enum DocLabel {
+  NONE
+  CONFIDENTIAL
+  DRAFT
+  FINAL
+  REVIEWED
+}
+enum DocStatus {
+  DRAFT
+  PUBLISHED
+}
+enum ProjectLifecycle {
+  PREPARATION
+  LIVE
+  LOCKED
+  CLOSED
+}
 
 // ── Users ──────────────────────────────────────────────────────
 
