@@ -53,7 +53,9 @@
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.25.76",
     "react-hot-toast": "^2.4.1",
-    "rate-limiter-flexible": "^5.0.5"
+    "rate-limiter-flexible": "^5.0.5",
+    "@prisma/adapter-mysql": "^7.5.0",
+    "mysql2": "^3.11.5"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

@@ -6,7 +6,6 @@ FROM base AS deps
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
-ENV DATABASE_URL=mysql://root:root@localhost:3306/placeholder
 RUN npm install --legacy-peer-deps || npm install --force || npm install
 RUN npx prisma generate
 
@@ -41,6 +40,7 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/pdf-lib ./node_modules/pdf-lib
 COPY --from=builder /app/node_modules/bcryptjs ./node_modules/bcryptjs
+COPY --from=builder /app/node_modules/mysql2 ./node_modules/mysql2
 USER nextjs
 EXPOSE 3000
 ENV PORT=3000 HOSTNAME="0.0.0.0"
