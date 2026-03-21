@@ -2,9 +2,10 @@ export const dynamic = "force-dynamic"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { AdminDashboardCharts } from "./AdminDashboardCharts"
+import { Users, Building2, FileCheck, MessageSquare, TrendingUp, Clock } from "lucide-react"
 import type { Metadata } from "next"
 
-export const metadata: Metadata = { title: "Admin Dashboard" }
+export const metadata: Metadata = { title: "Dashboard — Admin" }
 
 export default async function AdminDashboardPage() {
   const [totalInvestors, pendingApprovals, pendingNdas, openInquiries, totalProjects, recentActivity] = await Promise.all([
@@ -14,7 +15,7 @@ export default async function AdminDashboardPage() {
     prisma.contactInquiry.count({ where: { status: "NEW" } }),
     prisma.project.count(),
     prisma.documentActivity.findMany({
-      take: 8,
+      take: 10,
       orderBy: { viewedAt: "desc" },
       include: {
         document: { select: { name: true } },
@@ -30,62 +31,77 @@ export default async function AdminDashboardPage() {
     orderBy: { viewedAt: "asc" },
     take: 30,
   })
-
   const chartData = activityData.map(d => ({
     date: d.viewedAt.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
     views: d._count.id,
   }))
 
   const kpis = [
-    { label: "Total Investors",     value: totalInvestors,   href: "/admin/investors",  urgent: false },
-    { label: "Pending Approvals",   value: pendingApprovals, href: "/admin/investors",  urgent: pendingApprovals > 0 },
-    { label: "NDAs Awaiting",       value: pendingNdas,      href: "/admin/ndas",       urgent: pendingNdas > 0 },
-    { label: "New Inquiries",       value: openInquiries,    href: "/admin/inquiries",  urgent: openInquiries > 0 },
-    { label: "Active Projects",     value: totalProjects,    href: "/admin/projects",   urgent: false },
+    { label: "Total Investors",   value: totalInvestors,   href: "/admin/investors", icon: Users,        urgent: false,                 change: null },
+    { label: "Pending Approvals", value: pendingApprovals, href: "/admin/investors", icon: Clock,        urgent: pendingApprovals > 0,  change: null },
+    { label: "NDAs Awaiting",     value: pendingNdas,      href: "/admin/ndas",      icon: FileCheck,    urgent: pendingNdas > 0,       change: null },
+    { label: "New Inquiries",     value: openInquiries,    href: "/admin/inquiries", icon: MessageSquare, urgent: openInquiries > 0,    change: null },
+    { label: "Active Projects",   value: totalProjects,    href: "/admin/projects",  icon: Building2,    urgent: false,                 change: null },
   ]
 
   return (
-    <div className="p-4 sm:p-8 space-y-8 max-w-6xl">
-      <div>
-        <h1 className="text-2xl font-semibold" style={{ fontFamily: "'DM Serif Display',serif" }}>Dashboard</h1>
-        <p className="mt-1 text-sm" style={{ color: "hsl(0 0% 45%)" }}>Overview of your investor portal.</p>
+    <div className="max-w-6xl mx-auto">
+      {/* Page header */}
+      <div className="page-header">
+        <h1 className="page-title">Dashboard</h1>
+        <p className="page-subtitle">Overview of your investor portal activity</p>
       </div>
 
-      {/* KPI cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        {kpis.map(kpi => (
-          <Link
-            key={kpi.label}
-            href={kpi.href}
-            className="rounded-xl border p-4 transition-colors"
-            style={{
-              background: kpi.urgent ? "hsl(38 92% 50% / 0.05)" : "hsl(0 0% 5.5%)",
-              borderColor: kpi.urgent ? "hsl(38 92% 50% / 0.25)" : "hsl(0 0% 11%)",
-            }}
-          >
-            <p className="text-2xl font-semibold" style={{ color: kpi.urgent ? "hsl(38 92% 60%)" : "hsl(0 0% 92%)" }}>
-              {kpi.value}
-            </p>
-            <p className="text-xs mt-1" style={{ color: "hsl(0 0% 45%)" }}>{kpi.label}</p>
-          </Link>
-        ))}
-      </div>
+      <div className="section space-y-6">
+        {/* KPI Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          {kpis.map(kpi => {
+            const Icon = kpi.icon
+            return (
+              <Link key={kpi.label} href={kpi.href} className="stat-card hover:shadow transition-shadow" style={{ borderColor: kpi.urgent ? "var(--amber-border)" : "var(--border)", background: kpi.urgent ? "var(--amber-light)" : "var(--surface)" }}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="h-8 w-8 rounded-lg flex items-center justify-center" style={{ background: kpi.urgent ? "var(--amber-border)" : "var(--bg-subtle)" }}>
+                    <Icon className="h-4 w-4" style={{ color: kpi.urgent ? "var(--amber)" : "var(--text-secondary)" }} />
+                  </div>
+                  {kpi.urgent && kpi.value > 0 && (
+                    <span className="badge-amber badge text-xs">{kpi.value}</span>
+                  )}
+                </div>
+                <p className="stat-value" style={{ color: kpi.urgent && kpi.value > 0 ? "var(--amber)" : "var(--text-primary)" }}>{kpi.value}</p>
+                <p className="stat-label">{kpi.label}</p>
+              </Link>
+            )
+          })}
+        </div>
 
-      {/* Charts */}
-      <AdminDashboardCharts chartData={chartData} />
+        {/* Chart */}
+        <AdminDashboardCharts chartData={chartData} />
 
-      {/* Recent activity */}
-      <div className="space-y-4">
-        <h2 className="text-sm font-medium" style={{ color: "hsl(0 0% 60%)" }}>Recent Activity</h2>
-        <div className="rounded-xl border overflow-hidden" style={{ borderColor: "hsl(0 0% 11%)" }}>
+        {/* Recent Activity */}
+        <div className="card">
+          <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "var(--border)" }}>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" style={{ color: "var(--text-muted)" }} />
+              <h3 className="font-semibold text-sm" style={{ color: "var(--text-primary)" }}>Recent Activity</h3>
+            </div>
+            <Link href="/admin/analytics" className="text-xs font-medium" style={{ color: "var(--blue)" }}>View all →</Link>
+          </div>
           {recentActivity.length === 0 ? (
-            <p className="p-6 text-sm" style={{ color: "hsl(0 0% 35%)" }}>No activity yet.</p>
+            <div className="empty-state">
+              <div className="empty-state-icon">📊</div>
+              <p className="empty-state-title">No activity yet</p>
+              <p className="empty-state-desc">Activity will appear here once investors start accessing documents.</p>
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Time</th><th>Investor</th><th>Document</th><th>Project</th><th>Event</th>
+                    <th>Time</th>
+                    <th>Investor</th>
+                    <th>Document</th>
+                    <th>Project</th>
+                    <th>Event</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -95,16 +111,19 @@ export default async function AdminDashboardPage() {
                       : a.user.email
                     return (
                       <tr key={a.id}>
-                        <td className="text-xs whitespace-nowrap" style={{ color: "hsl(0 0% 40%)" }}>
+                        <td className="text-xs whitespace-nowrap" style={{ color: "var(--text-muted)" }}>
                           {a.viewedAt.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                         </td>
-                        <td className="text-sm" style={{ color: "hsl(0 0% 80%)" }}>{name}</td>
-                        <td className="text-sm" style={{ color: "hsl(0 0% 65%)" }}>{a.document.name}</td>
-                        <td className="text-xs" style={{ color: "hsl(0 0% 45%)" }}>{a.project.name}</td>
                         <td>
-                          <span className={`badge text-xs ${a.event === "open" ? "badge-new" : "badge-read"}`}>
-                            {a.event}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <div className="avatar h-6 w-6 text-xs">{name.charAt(0)}</div>
+                            <span className="text-sm">{name}</span>
+                          </div>
+                        </td>
+                        <td className="text-sm" style={{ color: "var(--text-secondary)" }}>{a.document.name}</td>
+                        <td className="text-xs" style={{ color: "var(--text-muted)" }}>{a.project.name}</td>
+                        <td>
+                          <span className={`badge ${a.event === "open" ? "badge-blue" : "badge-gray"} text-xs`}>{a.event}</span>
                         </td>
                       </tr>
                     )

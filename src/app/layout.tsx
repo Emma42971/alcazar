@@ -1,27 +1,29 @@
 import type { Metadata } from "next"
 import "./globals.css"
 import { SessionProvider } from "next-auth/react"
-import { Toaster } from "sonner"
+import { Toaster } from "react-hot-toast"
 
 export const metadata: Metadata = {
   title: { default: "Investor Portal", template: "%s — Investor Portal" },
-  description: "Secure investor data room",
-  robots: { index: false, follow: false }, // overridden per-page for public projects
+  description: "Secure investment data room and investor portal.",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body>
         <SessionProvider>
           {children}
           <Toaster
-            theme="dark"
+            position="bottom-right"
             toastOptions={{
               style: {
-                background: "hsl(0 0% 6%)",
-                border: "1px solid hsl(0 0% 14%)",
-                color: "hsl(0 0% 98%)",
+                background: "hsl(var(--surface))",
+                color: "hsl(var(--text))",
+                border: "1px solid hsl(var(--border))",
+                fontSize: "14px",
+                borderRadius: "8px",
+                boxShadow: "var(--shadow-md)",
               },
             }}
           />

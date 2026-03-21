@@ -7,7 +7,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <ThemeWrapper>
       <AdminNav />
-      <main className="flex-1 min-w-0 overflow-auto pt-14 lg:pt-0" style={{ background: "hsl(var(--background))", color: "hsl(var(--foreground))" }}>
+      <main className="flex-1 min-w-0 overflow-auto pt-14 lg:pt-0" style={{ background: "var(--bg)" }}>
         {children}
       </main>
     </ThemeWrapper>
