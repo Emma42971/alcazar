@@ -40,7 +40,7 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/pdf-lib ./node_modules/pdf-lib
 COPY --from=builder /app/node_modules/bcryptjs ./node_modules/bcryptjs
-COPY --from=builder /app/node_modules/mysql2 ./node_modules/mysql2
+COPY --from=builder /app/node_modules/mariadb ./node_modules/mariadb
 USER nextjs
 EXPOSE 3000
 ENV PORT=3000 HOSTNAME="0.0.0.0"

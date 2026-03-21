@@ -54,8 +54,8 @@
     "zod": "^3.25.76",
     "react-hot-toast": "^2.4.1",
     "rate-limiter-flexible": "^5.0.5",
-    "@prisma/adapter-mysql": "^7.5.0",
-    "mysql2": "^3.11.5"
+    "@prisma/adapter-mariadb": "^7.5.0",
+    "mariadb": "^3.5.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
