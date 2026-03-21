@@ -5,8 +5,8 @@ const nextConfig = {
     remotePatterns: [{ protocol: "https", hostname: "**" }],
     unoptimized: false,
   },
-  // Prisma et ses dépendances lourdes en externe
-  serverExternalPackages: ["@prisma/client", "prisma", "bcryptjs", "pdf-lib"],
+  // NE PAS inclure @prisma/client ici — doit être bundlé normalement
+  serverExternalPackages: ["bcryptjs", "pdf-lib"],
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
 }

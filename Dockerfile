@@ -7,7 +7,8 @@ COPY package.json package-lock.json* ./
 COPY prisma ./prisma
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
 RUN npm install --frozen-lockfile 2>/dev/null || npm install
-RUN npx prisma generate || true
+# Générer le client Prisma dans node_modules
+RUN npx prisma generate
 
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
@@ -15,7 +16,7 @@ COPY . .
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-ENV AUTH_SECRET=build_placeholder_secret_min_32_chars_x
+ENV AUTH_SECRET=build_placeholder_secret_min_32_chars_xx
 ENV AUTH_TRUST_HOST=true
 ENV NEXTAUTH_URL=http://localhost:3000
 ENV DATABASE_URL=mysql://root:root@localhost:3306/placeholder
@@ -24,8 +25,6 @@ ENV RESEND_FROM_EMAIL=noreply@example.com
 ENV ADMIN_EMAIL=admin@example.com
 ENV UPLOAD_DIR=/app/uploads
 RUN mkdir -p public
-# Regénérer prisma client avec le bon schéma avant le build
-RUN npx prisma generate || true
 RUN npx next build
 
 FROM base AS runner
@@ -41,6 +40,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/pdf-lib ./node_modules/pdf-lib
+COPY --from=builder /app/node_modules/bcryptjs ./node_modules/bcryptjs
 USER nextjs
 EXPOSE 3000
 ENV PORT=3000 HOSTNAME="0.0.0.0"
