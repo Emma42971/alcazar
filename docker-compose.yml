@@ -1,0 +1,66 @@
+services:
+  db:
+    image: mariadb:11
+    container_name: alcazar_db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-AlcazarRoot2026x}
+      MARIADB_DATABASE: ${MYSQL_DATABASE:-alcazar_portal}
+      MARIADB_USER: ${MYSQL_USER:-alcazar_user}
+      MARIADB_PASSWORD: ${MYSQL_PASSWORD:-AlcazarDB2026x}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      alcazar_net:
+        ipv4_address: 172.28.0.2
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 15s
+      timeout: 10s
+      retries: 15
+      start_period: 60s
+
+  app:
+    build: { context: ., dockerfile: Dockerfile }
+    container_name: alcazar_app
+    restart: unless-stopped
+    depends_on:
+      db: { condition: service_healthy }
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: mysql://${MYSQL_USER:-alcazar_user}:${MYSQL_PASSWORD:-AlcazarDB2026x}@172.28.0.2:3306/${MYSQL_DATABASE:-alcazar_portal}
+      DB_HOST: "172.28.0.2"
+      DB_PORT: "3306"
+      MYSQL_USER: ${MYSQL_USER:-alcazar_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-AlcazarDB2026x}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-alcazar_portal}
+      AUTH_SECRET: ${AUTH_SECRET:-change_me_in_hostinger_panel_32chars}
+      AUTH_TRUST_HOST: "true"
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      RESEND_API_KEY: ${RESEND_API_KEY:-placeholder}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-noreply@example.com}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      UPLOAD_DIR: /app/uploads
+      NODE_ENV: production
+    volumes:
+      - uploads_data:/app/uploads
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /docker/alcazar:/docker/alcazar
+    networks:
+      alcazar_net:
+        ipv4_address: 172.28.0.3
+
+volumes:
+  mysql_data:
+  uploads_data:
+
+networks:
+  alcazar_net:
+    driver: bridge
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.0.1
