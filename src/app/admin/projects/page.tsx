@@ -10,13 +10,13 @@ export default async function AdminProjectsPage() {
     <div className="p-4 sm:p-8 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="page-title">Projets</h1>
-        <Link href="/admin/projects/new" className="text-sm px-4 py-2 rounded-lg font-medium" style={{ background: "hsl(var(--text))", color: "hsl(var(--text))" }}>+ New Project</Link>
+        <Link href="/admin/projects/new" className="text-sm px-4 py-2 rounded-lg font-medium" className="btn btn-primary">+ New Project</Link>
       </div>
       {projects.length === 0 ? (
         <div className="text-center py-20 rounded-xl border" style={{ borderColor: "hsl(var(--border))" }}>
           <div className="text-4xl mb-4">🏢</div>
           <p className="text-sm mb-4" style={{ color: "hsl(var(--text-subtle))" }}>No projects yet.</p>
-          <Link href="/admin/projects/new" className="text-sm px-4 py-2 rounded-lg font-medium" style={{ background: "hsl(var(--text))", color: "hsl(var(--text))" }}>Create first project</Link>
+          <Link href="/admin/projects/new" className="text-sm px-4 py-2 rounded-lg font-medium" className="btn btn-primary">Create first project</Link>
         </div>
       ) : (
         <div className="rounded-xl border overflow-hidden" style={{ borderColor: "hsl(var(--border))" }}>

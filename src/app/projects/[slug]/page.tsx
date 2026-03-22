@@ -48,7 +48,7 @@ export default async function ProjectPage({ params, searchParams }: Props) {
           <div className="text-4xl">🔒</div>
           <h1 className="text-xl" style={{ fontFamily: 'inherit' }}>Private project</h1>
           <p className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>Sign in to access this project.</p>
-          <Link href={`/?redirect=/projects/${slug}`} className="inline-flex px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "hsl(var(--surface))", color: "hsl(var(--text-subtle))" }}>Sign In</Link>
+          <Link href={`/?redirect=/projects/${slug}`} className="btn btn-secondary">Sign In</Link>
         </div>
       </div>
     )

@@ -142,7 +142,7 @@ export default function RegisterPage() {
             </div>
           </section>
 
-          <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-opacity" style={{ background: "hsl(var(--text))", color: "hsl(var(--bg))", opacity: loading ? 0.7 : 1 }}>
+          <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-opacity" className="btn btn-navy">
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             Submit Application
           </button>

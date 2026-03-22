@@ -39,7 +39,7 @@ export function NdaGate({ project, user, hasAccess, ndaStatus }: Props) {
         <p className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>Create an account or sign in to view documents, financials, and project details.</p>
         <div className="flex gap-3 justify-center">
           <Link href="/" className="px-4 py-2 rounded-lg text-sm border transition-colors" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>Sign In</Link>
-          <Link href="/auth/register" className="px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "hsl(var(--surface))", color: "hsl(var(--text-subtle))" }}>Request Access</Link>
+          <Link href="/auth/register" className="btn btn-secondary">Request Access</Link>
         </div>
       </div>
     )

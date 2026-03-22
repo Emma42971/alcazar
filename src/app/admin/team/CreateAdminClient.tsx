@@ -17,9 +17,9 @@ export function CreateAdminClient() {
       {done && <p className="text-sm" style={{ color: "hsl(142 71% 55%)" }}>Admin created successfully.</p>}
       {error && <div className="alert-error">{error}</div>}
       <form onSubmit={submit} className="space-y-3">
-        <input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "hsl(var(--surface-raised))", border: "1px solid hsl(var(--border))", color: "hsl(var(--text))" }}/>
-        <input required type="password" minLength={8} value={password} onChange={e => setPassword(e.target.value)} placeholder="Password (min 8)" className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ background: "hsl(var(--surface-raised))", border: "1px solid hsl(var(--border))", color: "hsl(var(--text))" }}/>
-        <button type="submit" disabled={loading} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium" style={{ background: "hsl(var(--text))", color: "hsl(var(--text))" }}>
+        <input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" className="input"/>
+        <input required type="password" minLength={8} value={password} onChange={e => setPassword(e.target.value)} placeholder="Password (min 8)" className="input"/>
+        <button type="submit" disabled={loading} className="btn btn-primary">
           {loading && <Loader2 className="h-3.5 w-3.5 animate-spin"/>}Create Admin
         </button>
       </form>

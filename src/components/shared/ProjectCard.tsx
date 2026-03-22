@@ -123,7 +123,7 @@ export function ProjectCard({ project, hasAccess }: Props) {
               <span>{pct}%</span>
             </div>
             <div className="h-1 rounded-full overflow-hidden" style={{ background: "hsl(var(--accent))" }}>
-              <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: "hsl(var(--text))" }} />
+              <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: "hsl(var(--navy))" }} />
             </div>
           </div>
         )}

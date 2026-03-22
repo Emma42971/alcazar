@@ -106,7 +106,7 @@ export function ProjectEditForm({ project }: { project: any | null }) {
     }
   }
   const inp = "w-full rounded-lg px-3 py-2 text-sm outline-none"
-  const inpStyle = { background: "hsl(var(--surface-raised))", border: "1px solid hsl(var(--border))", color: "hsl(var(--text))" }
+  const inpStyle = { background: "hsl(var(--surface))", border: "1px solid hsl(var(--border))", color: "hsl(var(--text))" }
   const section = "rounded-xl border p-5 space-y-4"
   const sectionStyle = { background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }
 
@@ -253,7 +253,7 @@ export function ProjectEditForm({ project }: { project: any | null }) {
       </section>
 
       <div className="flex items-center gap-4">
-        <button type="submit" disabled={loading} className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium" style={{ background: "hsl(var(--text))", color: "hsl(var(--text))", opacity: loading ? 0.7 : 1 }}>
+        <button type="submit" disabled={loading} className="btn btn-primary btn-lg" className="btn btn-primary">
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {isNew ? "Create Project" : "Save Changes"}
         </button>

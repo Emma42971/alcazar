@@ -21,7 +21,7 @@ export default function VerifyOtpPage() {
         {error && <div className="alert-error text-left">{error}</div>}
         <form onSubmit={verify} className="space-y-4">
           <input value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,"").slice(0,6))} maxLength={6} inputMode="numeric" required placeholder="000000" className="alcazar-input text-center text-3xl font-bold tracking-[0.5em]" autoFocus autoComplete="one-time-code"/>
-          <button type="submit" disabled={loading||code.length<6} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium" style={{background: "hsl(var(--surface))",color: "hsl(var(--text-subtle))",opacity:(loading||code.length<6)?0.5:1}}>
+          <button type="submit" disabled={loading||code.length<6} className="btn btn-primary w-full btn-lg">
             {loading&&<Loader2 className="h-4 w-4 animate-spin"/>}Verify
           </button>
         </form>
