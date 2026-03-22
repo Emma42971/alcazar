@@ -28,6 +28,11 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: mysql://${MYSQL_USER:-alcazar_user}:${MYSQL_PASSWORD:-AlcazarDB2026x}@db:3306/${MYSQL_DATABASE:-alcazar_portal}
+      DB_HOST: "db"
+      DB_PORT: "3306"
+      MYSQL_USER: ${MYSQL_USER:-alcazar_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-AlcazarDB2026x}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-alcazar_portal}
       AUTH_SECRET: ${AUTH_SECRET:-change_me_in_hostinger_panel_32chars}
       AUTH_TRUST_HOST: "true"
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
