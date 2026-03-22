@@ -1,13 +1,14 @@
 FROM node:20-alpine AS base
 RUN apk add --no-cache libc6-compat openssl python3 make g++
+RUN npm install -g npm@latest
 WORKDIR /app
 
 FROM base AS deps
-RUN npm install -g npm@latest
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
 RUN npm install --legacy-peer-deps || npm install --force || npm install
+RUN echo "import { defineConfig } from 'prisma/config'; export default defineConfig({ schema: './prisma/schema.prisma' });" > prisma.config.ts
 RUN npx prisma generate
 
 FROM base AS builder
