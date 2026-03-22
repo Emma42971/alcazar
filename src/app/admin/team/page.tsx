@@ -7,7 +7,7 @@ export default async function TeamPage() {
   const admins = await prisma.user.findMany({ where: { role: "ADMIN" }, orderBy: { createdAt: "asc" } })
   return (
     <div className="p-4 sm:p-8 space-y-8 max-w-2xl">
-      <h1 className="text-2xl font-semibold" style={{ fontFamily: "'DM Serif Display',serif" }}>Team</h1>
+      <h1 className="page-title">Équipe</h1>
       <div className="rounded-xl border overflow-hidden" style={{ borderColor: "hsl(var(--border))" }}>
         <table className="data-table">
           <thead><tr><th>Email</th><th>Joined</th></tr></thead>

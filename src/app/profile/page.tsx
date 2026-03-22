@@ -10,7 +10,7 @@ export default async function ProfilePage() {
     <div className="min-h-screen" style={{ background: "hsl(var(--surface))" }}>
       <InvestorHeader />
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 space-y-6">
-        <h1 className="text-2xl" style={{ fontFamily: "'DM Serif Display',serif" }}>My Profile</h1>
+        <h1 className="text-2xl" style={{ fontFamily: 'inherit' }}>My Profile</h1>
         <div className="rounded-xl border p-6 space-y-4" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
           {[["Email", user.email], ["Name", profile ? `${profile.firstName} ${profile.lastName}` : "—"], ["Phone", profile?.phone ?? "—"], ["Company", profile?.companyName ?? "—"], ["Country", profile?.country ?? "—"], ["Investor Type", profile?.investorType ?? "—"], ["Est. Ticket", profile?.estTicket ?? "—"]].map(([k, v]) => (
             <div key={k} className="flex justify-between items-center py-2 border-b" style={{ borderColor: "hsl(var(--border))" }}>

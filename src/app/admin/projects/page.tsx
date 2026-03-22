@@ -9,7 +9,7 @@ export default async function AdminProjectsPage() {
   return (
     <div className="p-4 sm:p-8 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold" style={{ fontFamily: "'DM Serif Display',serif" }}>Projects</h1>
+        <h1 className="page-title">Projets</h1>
         <Link href="/admin/projects/new" className="text-sm px-4 py-2 rounded-lg font-medium" style={{ background: "hsl(var(--text))", color: "hsl(var(--text))" }}>+ New Project</Link>
       </div>
       {projects.length === 0 ? (

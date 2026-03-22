@@ -35,11 +35,11 @@ export function UpdatesClient() {
   return (
     <div className="space-y-6">
       {/* Status card */}
-      <div className="rounded-xl border p-6 space-y-4" style={{ background: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}>
+      <div className="rounded-xl border p-6 space-y-4" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-lg flex items-center justify-center" style={{ background: "hsl(var(--accent))" }}>
-            {status === "idle"    && <RefreshCw className="h-5 w-5" style={{ color: "hsl(var(--muted-foreground))" }} />}
-            {(status === "pulling" || status === "building") && <Loader2 className="h-5 w-5 animate-spin" style={{ color: "hsl(var(--foreground))" }} />}
+            {status === "idle"    && <RefreshCw className="h-5 w-5" style={{ color: "hsl(var(--text-muted))" }} />}
+            {(status === "pulling" || status === "building") && <Loader2 className="h-5 w-5 animate-spin" style={{ color: "hsl(var(--text))" }} />}
             {status === "done"    && <CheckCircle className="h-5 w-5" style={{ color: "hsl(142 71% 55%)" }} />}
             {status === "error"   && <AlertCircle className="h-5 w-5" style={{ color: "hsl(0 72% 65%)" }} />}
           </div>
@@ -51,7 +51,7 @@ export function UpdatesClient() {
               {status === "done"     && "Update complete!"}
               {status === "error"    && "Update failed"}
             </p>
-            <p className="text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
+            <p className="text-xs" style={{ color: "hsl(var(--text-muted))" }}>
               {status === "idle" && "This will git pull and rebuild the Docker image."}
               {status === "done" && "The application has been updated and restarted."}
               {status === "error" && error}
@@ -60,7 +60,7 @@ export function UpdatesClient() {
         </div>
 
         <div className="pt-2 border-t" style={{ borderColor: "hsl(var(--border))" }}>
-          <p className="text-xs mb-3" style={{ color: "hsl(var(--muted-foreground))" }}>
+          <p className="text-xs mb-3" style={{ color: "hsl(var(--text-muted))" }}>
             <strong>Before updating:</strong> make sure your latest code is pushed to GitHub. The server will pull from the main branch.
           </p>
           <button
@@ -68,8 +68,8 @@ export function UpdatesClient() {
             disabled={status === "pulling" || status === "building"}
             className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-opacity"
             style={{
-              background: "hsl(var(--foreground))",
-              color: "hsl(var(--background))",
+              background: "hsl(var(--text))",
+              color: "hsl(var(--bg))",
               opacity: (status === "pulling" || status === "building") ? 0.6 : 1
             }}
           >
@@ -84,7 +84,7 @@ export function UpdatesClient() {
       {/* Logs */}
       {logs.length > 0 && (
         <div className="rounded-xl border overflow-hidden" style={{ borderColor: "hsl(var(--border))" }}>
-          <div className="px-4 py-2 border-b text-xs font-medium" style={{ background: "hsl(var(--accent))", borderColor: "hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}>
+          <div className="px-4 py-2 border-b text-xs font-medium" style={{ background: "hsl(var(--accent))", borderColor: "hsl(var(--border))", color: "hsl(var(--text-muted))" }}>
             Build logs
           </div>
           <div className="p-4 font-mono text-xs space-y-1 max-h-64 overflow-y-auto" style={{ background: "hsl(var(--surface))", color: "hsl(142 71% 55%)" }}>

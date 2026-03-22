@@ -17,7 +17,7 @@ export default function VerifyOtpPage() {
     <div className="min-h-screen flex items-center justify-center px-4" style={{background: "hsl(var(--surface))"}}>
       <div className="w-full max-w-sm space-y-8 text-center">
         <div className="text-4xl">🔐</div>
-        <div><h1 className="text-2xl" style={{fontFamily:"'DM Serif Display',serif"}}>Check your email</h1><p className="mt-2 text-sm" style={{color: "hsl(var(--text-subtle))"}}>We sent a 6-digit code. Expires in 10 minutes.</p></div>
+        <div><h1 className="text-2xl" style={{fontFamily: 'inherit'}}>Check your email</h1><p className="mt-2 text-sm" style={{color: "hsl(var(--text-subtle))"}}>We sent a 6-digit code. Expires in 10 minutes.</p></div>
         {error && <div className="alert-error text-left">{error}</div>}
         <form onSubmit={verify} className="space-y-4">
           <input value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,"").slice(0,6))} maxLength={6} inputMode="numeric" required placeholder="000000" className="alcazar-input text-center text-3xl font-bold tracking-[0.5em]" autoFocus autoComplete="one-time-code"/>

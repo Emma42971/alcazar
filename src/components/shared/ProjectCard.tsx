@@ -53,7 +53,7 @@ export function ProjectCard({ project, hasAccess }: Props) {
     <Link
       href={`/projects/${project.slug}`}
       className="group block rounded-xl border overflow-hidden transition-all duration-200 hover:border-zinc-600"
-      style={{ background: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}
+      style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}
     >
       {/* Cover */}
       <div className="h-40 overflow-hidden relative" style={{ background: "hsl(var(--accent))" }}>
@@ -67,7 +67,7 @@ export function ProjectCard({ project, hasAccess }: Props) {
           </div>
         )}
         {project.isFeatured && (
-          <span className="absolute top-2.5 left-2.5 text-xs font-medium px-2 py-0.5 rounded-full" style={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}>
+          <span className="absolute top-2.5 left-2.5 text-xs font-medium px-2 py-0.5 rounded-full" style={{ background: "hsl(var(--bg))", border: "1px solid hsl(var(--border))", color: "hsl(var(--text-muted))" }}>
             Featured
           </span>
         )}
@@ -80,12 +80,12 @@ export function ProjectCard({ project, hasAccess }: Props) {
           )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-sm font-medium truncate" style={{ color: "hsl(var(--foreground))" }}>{project.name}</h3>
+              <h3 className="text-sm font-medium truncate" style={{ color: "hsl(var(--text))" }}>{project.name}</h3>
               <span className={`badge ${statusColor[project.status] ?? "badge-read"} shrink-0`} style={{ fontSize: "10px" }}>
                 {project.status}
               </span>
             </div>
-            <div className="flex items-center gap-2 mt-0.5 text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
+            <div className="flex items-center gap-2 mt-0.5 text-xs" style={{ color: "hsl(var(--text-muted))" }}>
               {project.sector && <span>{project.sector}</span>}
               {project.sector && project.country && <span>·</span>}
               {project.country && <span>{project.country}</span>}
@@ -94,7 +94,7 @@ export function ProjectCard({ project, hasAccess }: Props) {
         </div>
 
         {project.summary && (
-          <p className="text-xs leading-relaxed line-clamp-2" style={{ color: "hsl(var(--muted-foreground))" }}>
+          <p className="text-xs leading-relaxed line-clamp-2" style={{ color: "hsl(var(--text-muted))" }}>
             {project.summary}
           </p>
         )}
@@ -103,14 +103,14 @@ export function ProjectCard({ project, hasAccess }: Props) {
           <div className="flex items-center gap-4 pt-0.5">
             {showIrr && (
               <div>
-                <p className="text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>IRR Target</p>
-                <p className="text-sm font-medium" style={{ color: "hsl(var(--foreground))" }}>{formatIrr(project.irrTargetBps)}</p>
+                <p className="text-xs" style={{ color: "hsl(var(--text-muted))" }}>IRR Target</p>
+                <p className="text-sm font-medium" style={{ color: "hsl(var(--text))" }}>{formatIrr(project.irrTargetBps)}</p>
               </div>
             )}
             {showTicket && (
               <div>
-                <p className="text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>Min. Ticket</p>
-                <p className="text-sm font-medium" style={{ color: "hsl(var(--foreground))" }}>{formatCurrency(project.minTicket)}</p>
+                <p className="text-xs" style={{ color: "hsl(var(--text-muted))" }}>Min. Ticket</p>
+                <p className="text-sm font-medium" style={{ color: "hsl(var(--text))" }}>{formatCurrency(project.minTicket)}</p>
               </div>
             )}
           </div>
@@ -118,12 +118,12 @@ export function ProjectCard({ project, hasAccess }: Props) {
 
         {pct !== null && (
           <div className="space-y-1">
-            <div className="flex justify-between text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
+            <div className="flex justify-between text-xs" style={{ color: "hsl(var(--text-muted))" }}>
               <span>Raised</span>
               <span>{pct}%</span>
             </div>
             <div className="h-1 rounded-full overflow-hidden" style={{ background: "hsl(var(--accent))" }}>
-              <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: "hsl(var(--foreground))" }} />
+              <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: "hsl(var(--text))" }} />
             </div>
           </div>
         )}

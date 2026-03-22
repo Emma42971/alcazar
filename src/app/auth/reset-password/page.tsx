@@ -19,7 +19,7 @@ function ResetForm() {
 export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4" style={{background: "hsl(var(--surface))"}}>
-      <div className="w-full max-w-sm space-y-8"><h1 className="text-2xl" style={{fontFamily:"'DM Serif Display',serif"}}>Set new password</h1><Suspense fallback={<div/>}><ResetForm/></Suspense><Link href="/" className="block text-sm text-center" style={{color: "hsl(var(--text-subtle))"}}>← Back</Link></div>
+      <div className="w-full max-w-sm space-y-8"><h1 className="text-2xl" style={{fontFamily: 'inherit'}}>Set new password</h1><Suspense fallback={<div/>}><ResetForm/></Suspense><Link href="/" className="block text-sm text-center" style={{color: "hsl(var(--text-subtle))"}}>← Back</Link></div>
     </div>
   )
 }

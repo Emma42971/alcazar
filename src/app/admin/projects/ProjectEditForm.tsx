@@ -13,10 +13,10 @@ const RISKS    = ["Low","Medium","Medium-High","High"]
 function Toggle({ value, onChange, label }: { value: boolean; onChange: () => void; label: string }) {
   return (
     <label className="flex items-center gap-3 cursor-pointer">
-      <div onClick={onChange} className="relative w-9 h-5 rounded-full transition-colors" style={{ background: value ? "hsl(var(--foreground) / 0.8)" : "hsl(var(--border))" }}>
+      <div onClick={onChange} className="relative w-9 h-5 rounded-full transition-colors" style={{ background: value ? "hsl(var(--text) / 0.8)" : "hsl(var(--border))" }}>
         <div className="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform" style={{ transform: value ? "translateX(16px)" : "translateX(0)" }}/>
       </div>
-      <span className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>{label}</span>
+      <span className="text-sm" style={{ color: "hsl(var(--text-muted))" }}>{label}</span>
     </label>
   )
 }
@@ -114,7 +114,7 @@ export function ProjectEditForm({ project }: { project: any | null }) {
     <form onSubmit={submit} className="space-y-8 max-w-3xl">
       <div className="flex items-center gap-3">
         <Link href="/admin/projects" className="text-xs px-2.5 py-1.5 rounded-lg border" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>← Projects</Link>
-        <h1 className="text-xl font-semibold" style={{ fontFamily: "'DM Serif Display',serif" }}>{isNew ? "New Project" : `Edit — ${project.name}`}</h1>
+        <h1 className="text-xl font-semibold" style={{ fontFamily: 'inherit' }}>{isNew ? "New Project" : `Edit — ${project.name}`}</h1>
         {!isNew && <Link href={`/projects/${project.slug}?preview=1`} target="_blank" className="ml-auto text-xs px-2.5 py-1.5 rounded-lg border" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>👁 Preview</Link>}
       </div>
 
