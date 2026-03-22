@@ -1,18 +1,18 @@
 services:
   db:
-    image: mysql:8.0
+    image: mariadb:11
     container_name: alcazar_db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-AlcazarRoot2026x}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-alcazar_portal}
-      MYSQL_USER: ${MYSQL_USER:-alcazar_user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-AlcazarDB2026x}
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-AlcazarRoot2026x}
+      MARIADB_DATABASE: ${MYSQL_DATABASE:-alcazar_portal}
+      MARIADB_USER: ${MYSQL_USER:-alcazar_user}
+      MARIADB_PASSWORD: ${MYSQL_PASSWORD:-AlcazarDB2026x}
     volumes:
       - mysql_data:/var/lib/mysql
     networks: [alcazar_net]
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pAlcazarRoot2026x"]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 15s
       timeout: 10s
       retries: 15
