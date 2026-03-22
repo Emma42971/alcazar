@@ -10,7 +10,9 @@ services:
       MARIADB_PASSWORD: ${MYSQL_PASSWORD:-AlcazarDB2026x}
     volumes:
       - mysql_data:/var/lib/mysql
-    networks: [alcazar_net]
+    networks:
+      alcazar_net:
+        ipv4_address: 172.28.0.2
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 15s
@@ -27,8 +29,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: mysql://${MYSQL_USER:-alcazar_user}:${MYSQL_PASSWORD:-AlcazarDB2026x}@db:3306/${MYSQL_DATABASE:-alcazar_portal}
-      DB_HOST: "db"
+      DATABASE_URL: mysql://${MYSQL_USER:-alcazar_user}:${MYSQL_PASSWORD:-AlcazarDB2026x}@172.28.0.2:3306/${MYSQL_DATABASE:-alcazar_portal}
+      DB_HOST: "172.28.0.2"
       DB_PORT: "3306"
       MYSQL_USER: ${MYSQL_USER:-alcazar_user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-AlcazarDB2026x}
@@ -45,7 +47,9 @@ services:
       - uploads_data:/app/uploads
       - /var/run/docker.sock:/var/run/docker.sock
       - /docker/alcazar:/docker/alcazar
-    networks: [alcazar_net]
+    networks:
+      alcazar_net:
+        ipv4_address: 172.28.0.3
 
 volumes:
   mysql_data:
@@ -54,3 +58,9 @@ volumes:
 networks:
   alcazar_net:
     driver: bridge
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.0.1

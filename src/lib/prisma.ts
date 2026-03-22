@@ -6,9 +6,9 @@ const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefi
 
 function createPrismaClient() {
   const pool = createPool({
-    host:            "db",
-    port:            3306,
-    user:            process.env.MYSQL_USER     ?? "alcazar_user",
+    host:            process.env.DB_HOST ?? "172.28.0.2",
+    port:            Number(process.env.DB_PORT) || 3306,
+    user:            process.env.MYSQL_USER ?? "alcazar_user",
     password:        process.env.MYSQL_PASSWORD ?? "AlcazarDB2026x",
     database:        process.env.MYSQL_DATABASE ?? "alcazar_portal",
     connectionLimit: 10,
