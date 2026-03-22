@@ -6,13 +6,18 @@ const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefi
 
 function createPrismaClient() {
   const url = new URL(process.env.DATABASE_URL!)
+
+  // In Docker, hostname may be "db" or "localhost" — mariadb needs explicit host
+  const host = url.hostname === "localhost" ? "db" : url.hostname
+
   const pool = mariadb.createPool({
-    host:            url.hostname,
+    host,
     port:            parseInt(url.port) || 3306,
     user:            url.username,
-    password:        url.password,
+    password:        decodeURIComponent(url.password),
     database:        url.pathname.slice(1),
     connectionLimit: 10,
+    connectTimeout:  10000,
   })
   const adapter = new PrismaMariaDb(pool)
   return new PrismaClient({
