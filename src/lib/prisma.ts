@@ -1,23 +1,19 @@
 import { PrismaClient } from "@prisma/client"
 import { PrismaMariaDb } from "@prisma/adapter-mariadb"
-import * as mariadb from "mariadb"
+import { createPool } from "mariadb"
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined }
 
 function createPrismaClient() {
-  const url = new URL(process.env.DATABASE_URL!)
-
-  // In Docker, hostname may be "db" or "localhost" — mariadb needs explicit host
-  const host = url.hostname === "localhost" ? "db" : url.hostname
-
-  const pool = mariadb.createPool({
-    host,
-    port:            parseInt(url.port) || 3306,
-    user:            url.username,
-    password:        decodeURIComponent(url.password),
-    database:        url.pathname.slice(1),
+  const pool = createPool({
+    host:            process.env.DB_HOST ?? "db",
+    port:            parseInt(process.env.DB_PORT ?? "3306"),
+    user:            process.env.DB_USER ?? "alcazar_user",
+    password:        process.env.DB_PASSWORD ?? "AlcazarDB2026x",
+    database:        process.env.DB_NAME ?? "alcazar_portal",
     connectionLimit: 10,
     connectTimeout:  10000,
+    allowPublicKeyRetrieval: true,
   })
   const adapter = new PrismaMariaDb(pool)
   return new PrismaClient({
