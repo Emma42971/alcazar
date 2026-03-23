@@ -1,0 +1,73 @@
+services:
+  db:
+    image: mariadb:11
+    container_name: alcazar_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: AlcazarRoot2026x
+      MYSQL_DATABASE:      alcazar_portal
+      MYSQL_USER:          alcazar_user
+      MYSQL_PASSWORD:      AlcazarDB2026x
+    volumes:
+      - alcazar_db_data:/var/lib/mysql
+    networks:
+      alcazar_net:
+        ipv4_address: 172.28.0.2
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-pAlcazarRoot2026x"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    image: alcazar-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: alcazar_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV:            production
+      NEXTAUTH_URL:        https://alc.e42.ca
+      AUTH_SECRET:         gZcNsHcQKPcQfdRFYBsYvyqgjAlv2YFU4AhIjon9tVg=
+      AUTH_TRUST_HOST:     "true"
+      DATABASE_URL:        mysql://alcazar_user:AlcazarDB2026x@172.28.0.2:3306/alcazar_portal
+      DB_HOST:             172.28.0.2
+      MYSQL_USER:          alcazar_user
+      MYSQL_PASSWORD:      AlcazarDB2026x
+      MYSQL_DATABASE:      alcazar_portal
+      RESEND_FROM_EMAIL:   portal@e42.ca
+      ADMIN_EMAIL:         kevin@e42.agency
+      UPLOAD_DIR:          /app/uploads
+      # Variables optionnelles — ajouter sur Hostinger quand prêt
+      RESEND_API_KEY:      ${RESEND_API_KEY:-placeholder}
+      ANTHROPIC_API_KEY:   ${ANTHROPIC_API_KEY:-placeholder}
+      STRIPE_SECRET_KEY:   ${STRIPE_SECRET_KEY:-placeholder}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-placeholder}
+      STRIPE_PRICE_STARTER:  ${STRIPE_PRICE_STARTER:-}
+      STRIPE_PRICE_PRO:      ${STRIPE_PRICE_PRO:-}
+      STRIPE_PRICE_ENTERPRISE: ${STRIPE_PRICE_ENTERPRISE:-}
+    ports:
+      - "3000:3000"
+    volumes:
+      - alcazar_uploads:/app/uploads
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /docker/alcazar:/docker/alcazar:ro
+    networks:
+      alcazar_net:
+        ipv4_address: 172.28.0.3
+
+volumes:
+  alcazar_db_data:
+  alcazar_uploads:
+
+networks:
+  alcazar_net:
+    driver: bridge
+    enable_ipv6: false
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
