@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/auth"
+import { getToken } from "next-auth/jwt"
 
 const store = new Map<string, { count: number; resetAt: number }>()
 
@@ -20,13 +20,19 @@ export async function middleware(req: NextRequest) {
     ?? req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
     ?? "unknown"
 
-  // Rate limit only login endpoint
+  // Skip auth entirely for static assets
+  if (
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/favicon") ||
+    pathname.includes(".")
+  ) {
+    return NextResponse.next()
+  }
+
+  // Rate limit only login
   if (pathname === "/api/auth/signin" || pathname === "/api/auth/callback/credentials") {
     if (checkRateLimit(`login:${ip}`, 20, 15 * 60 * 1000)) {
-      return NextResponse.json(
-        { error: "Too many auth attempts. Try again in 15 minutes." },
-        { status: 429 }
-      )
+      return NextResponse.json({ error: "Too many auth attempts. Try again in 15 minutes." }, { status: 429 })
     }
   } else if (pathname.startsWith("/api/") && !pathname.startsWith("/api/auth/")) {
     if (checkRateLimit(`api:${ip}`, 300, 60 * 1000)) {
@@ -34,9 +40,20 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Use auth() from NextAuth v5 — reads the correct cookie automatically
-  const session = await auth()
-  const token = session?.user
+  // Skip token check for non-protected routes
+  if (!pathname.startsWith("/admin") && !pathname.startsWith("/dashboard") && !pathname.startsWith("/projects")) {
+    return NextResponse.next()
+  }
+
+  // NextAuth v5 uses __Secure- prefix in production HTTPS
+  const isSecure = req.url.startsWith("https://")
+  const cookieName = isSecure ? "__Secure-authjs.session-token" : "authjs.session-token"
+
+  const token = await getToken({
+    req,
+    secret: process.env.AUTH_SECRET,
+    cookieName,
+  })
 
   if (pathname.startsWith("/admin")) {
     if (!token) return NextResponse.redirect(new URL("/?callbackUrl=" + encodeURIComponent(pathname), req.url))
@@ -52,11 +69,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/admin/:path*",
-    "/dashboard/:path*",
-    "/projects/:path*",
-    "/api/:path*",
-    "/((?!_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 }
