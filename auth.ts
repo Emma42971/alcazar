@@ -8,11 +8,6 @@ declare module "next-auth" {
       status: string
     } & DefaultSession["user"]
   }
-  interface JWT {
-    id?: string
-    role?: string
-    status?: string
-  }
 }
 
 import NextAuth from "next-auth"
@@ -21,20 +16,10 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  secret: process.env.AUTH_SECRET,
   session: {
     strategy: "jwt",
     maxAge: 8 * 60 * 60,
-    updateAge: 60 * 60,
-  },
-  cookies: {
-    sessionToken: {
-      options: {
-        httpOnly: true,
-        sameSite: "strict",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      }
-    }
   },
   trustHost: true,
   providers: [
@@ -46,43 +31,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string },
-          include: { profile: true },
-        })
-        if (!user) return null
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email as string },
+            include: { profile: true },
+          })
+          if (!user) return null
 
-        // bcrypt only in auth.ts — argon2 only in API routes via password.ts
-        const valid = await bcrypt.compare(credentials.password as string, user.password)
-        if (!valid) return null
-        if (user.status === "REJECTED") return null
+          const valid = await bcrypt.compare(credentials.password as string, user.password)
+          if (!valid) return null
+          if (user.status === "REJECTED") return null
 
-        return {
-          id:     user.id,
-          email:  user.email,
-          role:   user.role,
-          status: user.status,
-          name:   user.profile ? `${user.profile.firstName} ${user.profile.lastName}` : user.email,
+          return {
+            id:     user.id,
+            email:  user.email,
+            role:   user.role,
+            status: user.status,
+            name:   user.profile ? `${user.profile.firstName} ${user.profile.lastName}` : user.email,
+          }
+        } catch (e) {
+          console.error("[auth] authorize error:", e)
+          return null
         }
       }
     })
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // Only set on first sign in
       if (user) {
         token.id     = user.id
         token.role   = (user as any).role
         token.status = (user as any).status
-      }
-      if (token.id) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          select: { role: true, status: true }
-        })
-        if (dbUser) {
-          token.role   = dbUser.role
-          token.status = dbUser.status
-        }
       }
       return token
     },
