@@ -7,7 +7,7 @@ import { readFile } from "fs/promises"
 import { join } from "path"
 import { existsSync } from "fs"
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR ?? join(process.cwd(), "uploads")
+const UPLOAD_DIR = process.env.UPLOAD_DIR ?? join(/* turbopackIgnore: true */ process.cwd(), "uploads")
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const session = await auth()
