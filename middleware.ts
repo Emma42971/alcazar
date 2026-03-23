@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getToken } from "next-auth/jwt"
+import { auth } from "@/auth"
 
 const store = new Map<string, { count: number; resetAt: number }>()
 
@@ -20,21 +20,23 @@ export async function middleware(req: NextRequest) {
     ?? req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
     ?? "unknown"
 
-  // Rate limiting — exclure /api/auth/session et /api/auth/csrf (appelés automatiquement)
+  // Rate limit only login endpoint
   if (pathname === "/api/auth/signin" || pathname === "/api/auth/callback/credentials") {
-    if (checkRateLimit(`login:${ip}`, 10, 15 * 60 * 1000)) {
+    if (checkRateLimit(`login:${ip}`, 20, 15 * 60 * 1000)) {
       return NextResponse.json(
         { error: "Too many auth attempts. Try again in 15 minutes." },
-        { status: 429, headers: { "Retry-After": "900" } }
+        { status: 429 }
       )
     }
   } else if (pathname.startsWith("/api/") && !pathname.startsWith("/api/auth/")) {
-    if (checkRateLimit(`api:${ip}`, 200, 60 * 1000)) {
+    if (checkRateLimit(`api:${ip}`, 300, 60 * 1000)) {
       return NextResponse.json({ error: "Rate limit exceeded." }, { status: 429 })
     }
   }
 
-  const token = await getToken({ req, secret: process.env.AUTH_SECRET })
+  // Use auth() from NextAuth v5 — reads the correct cookie automatically
+  const session = await auth()
+  const token = session?.user
 
   if (pathname.startsWith("/admin")) {
     if (!token) return NextResponse.redirect(new URL("/?callbackUrl=" + encodeURIComponent(pathname), req.url))
@@ -46,11 +48,7 @@ export async function middleware(req: NextRequest) {
     if (token.status === "PENDING_APPROVAL") return NextResponse.redirect(new URL("/auth/pending", req.url))
   }
 
-  const response = NextResponse.next()
-  response.headers.set("X-Content-Type-Options", "nosniff")
-  response.headers.set("X-Frame-Options", "SAMEORIGIN")
-  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin")
-  return response
+  return NextResponse.next()
 }
 
 export const config = {
