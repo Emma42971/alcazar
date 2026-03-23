@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Plus, Trash2, PieChart } from "lucide-react"
 
-type Entry = { id: string; investorName: string; amount: number; percentage: number | null; shareClass: string; entryType: string; notes: string | null }
+type Entry = { id: string; investorName: string; amount: number; percentage: number | null; shareClass?: string; entryType: string; notes?: string | null; note?: string | null }
 
 export function CapTableClient({ projectId, entries }: { projectId: string; entries: Entry[] }) {
   const router = useRouter()
@@ -88,7 +88,7 @@ export function CapTableClient({ projectId, entries }: { projectId: string; entr
                           <span className="text-xs">{pct}%</span>
                         </div>
                       </td>
-                      <td><span className="badge badge-gray">{e.shareClass}</span></td>
+                      <td><span className="badge badge-gray">{e.shareClass ?? "—"}</span></td>
                       <td><span className={`badge ${e.entryType === "equity" ? "badge-blue" : "badge-yellow"}`}>{e.entryType}</span></td>
                       <td>
                         <button onClick={() => remove(e.id)} className="btn btn-danger btn-icon-sm">
