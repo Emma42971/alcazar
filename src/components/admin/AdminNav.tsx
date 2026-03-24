@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Building2, Users, BarChart2,
   Settings, LogOut, Menu, X, Sun, Moon,
   RefreshCw, Shield, Zap, UserCog, ChevronRight,
-  Globe, DollarSign, Lock, ShoppingBag
+  Globe, DollarSign, Lock, ShoppingBag, Crown
 } from "lucide-react"
 import { NotificationBell } from "@/components/shared/NotificationBell"
 
@@ -38,6 +38,7 @@ const NAV = [
       { href: "/admin/team",         label: "Équipe",          icon: UserCog },
       { href: "/admin/settings",     label: "Paramètres",      icon: Settings },
       { href: "/admin/updates",      label: "Mises à jour",    icon: RefreshCw },
+      { href: "/super-admin",          label: "Super Admin",     icon: Crown, superOnly: true },
     ]
   },
 ]

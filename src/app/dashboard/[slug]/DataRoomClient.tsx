@@ -19,18 +19,24 @@ type Folder   = { id: string; name: string; index: string; parentId: string | nu
 type Doc      = { id: string; name: string; fileType: string; filePath: string; sizeBytes: number | null; label: string; allowDownload: boolean; folderId: string | null; projectId: string }
 type Activity = { id: string; userId: string; investorName: string; documentName: string; event: string; viewedAt: string }
 type Question = { id: string; question: string; answer: string | null; category: string; createdAt: string }
+type Update  = { id: string; title: string; content: string; createdAt: string }
+type ChatMsg = { id: string; content: string; isAdmin: boolean; createdAt: string }
 
 export function DataRoomClient({
   projectId, projectName, projectSlug, folders, documents, recentActivity, questions, userId
 }: {
   projectId: string; projectName: string; projectSlug: string
   folders: Folder[]; documents: Doc[]; recentActivity: Activity[]; questions: Question[]; userId: string
+  updates?: Update[]
 }) {
   const [activeFolder, setActiveFolder] = useState<string | null>(null)
   const [qaText, setQaText] = useState("")
   const [qaLoading, setQaLoading] = useState(false)
   const [qaSuccess, setQaSuccess] = useState(false)
-  const [activeTab, setActiveTab] = useState<"files" | "activity" | "qa">("files")
+  const [activeTab, setActiveTab] = useState<"files" | "updates" | "activity" | "qa">("files")
+  const [chatText, setChatText] = useState("")
+  const [chatLoading, setChatLoading] = useState(false)
+  const [localUpdates, setLocalUpdates] = useState<Update[]>([])
 
   // Track document open
   async function trackOpen(docId: string) {
@@ -74,6 +80,7 @@ export function DataRoomClient({
         <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: "hsl(var(--bg-subtle))" }}>
           {[
             { key: "files", label: "Files", icon: FolderOpen },
+            { key: "updates", label: "Updates", icon: Bell },
             { key: "activity", label: "Activity", icon: Eye },
             { key: "qa", label: "Q&A", icon: MessageSquare },
           ].map(tab => (
@@ -280,4 +287,26 @@ export function DataRoomClient({
       </div>
     </div>
   )
-}
+}{/* UPDATES TAB */}
+        {activeTab === "updates" && (
+          <div className="space-y-3">
+            {(updates ?? []).length === 0 ? (
+              <div className="card card-p text-center py-10">
+                <Bell className="h-8 w-8 mx-auto mb-2" style={{ color: "hsl(var(--text-muted))" }} />
+                <p className="text-sm" style={{ color: "hsl(var(--text-muted))" }}>No updates yet</p>
+              </div>
+            ) : (updates ?? []).map(u => (
+              <div key={u.id} className="card card-p space-y-2">
+                <div className="flex items-start justify-between gap-3">
+                  <p className="font-semibold text-sm" style={{ color: "hsl(var(--text))" }}>{u.title}</p>
+                  <span className="text-xs whitespace-nowrap shrink-0" style={{ color: "hsl(var(--text-muted))" }}>
+                    {new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  </span>
+                </div>
+                <p className="text-sm leading-relaxed" style={{ color: "hsl(var(--text-subtle))" }}>{u.content}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        

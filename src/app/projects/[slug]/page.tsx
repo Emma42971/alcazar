@@ -43,7 +43,7 @@ export default async function ProjectPage({ params, searchParams }: Props) {
 
   if (!user && !project.teaserPublic) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "hsl(var(--surface))" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "hsl(var(--emerald))" }}>
         <div className="text-center space-y-4 max-w-sm px-4">
           <div className="text-4xl">🔒</div>
           <h1 className="text-xl" style={{ fontFamily: 'inherit' }}>Private project</h1>
@@ -67,7 +67,7 @@ export default async function ProjectPage({ params, searchParams }: Props) {
     : []
 
   return (
-    <div className="min-h-screen" style={{ background: "hsl(var(--surface))" }}>
+    <div className="min-h-screen" style={{ background: "hsl(var(--emerald))" }}>
       {/* Breadcrumb */}
       <div className="border-b px-4 sm:px-6 py-2.5 flex items-center gap-2 text-xs" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>
         <Link href="/projects" className="hover:text-white transition-colors">All projects</Link>
@@ -79,7 +79,7 @@ export default async function ProjectPage({ params, searchParams }: Props) {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-10">
         {/* Cover */}
         {project.coverImage && (
-          <div className="rounded-xl overflow-hidden h-56 sm:h-72" style={{ background: "hsl(var(--surface))" }}>
+          <div className="rounded-xl overflow-hidden h-56 sm:h-72" style={{ background: "hsl(var(--emerald))" }}>
             <img src={project.coverImage} alt="" className="w-full h-full object-cover" />
           </div>
         )}
@@ -120,8 +120,8 @@ export default async function ProjectPage({ params, searchParams }: Props) {
                   {formatCurrency(project.raisedAmount)}{project.targetRaise ? ` / ${formatCurrency(project.targetRaise)}` : ""}
                 </span>
               </div>
-              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "hsl(var(--surface))" }}>
-                <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "hsl(var(--surface))" }} />
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "hsl(var(--emerald))" }}>
+                <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "hsl(var(--emerald))" }} />
               </div>
             </div>
           )}
@@ -185,7 +185,7 @@ export default async function ProjectPage({ params, searchParams }: Props) {
         {hasAccess && project.videoUrl && (
           <div className="space-y-3">
             <h2 className="text-xs font-medium uppercase tracking-widest" style={{ color: "hsl(var(--text-subtle))" }}>Presentation</h2>
-            <div className="rounded-xl overflow-hidden" style={{ aspectRatio: "16/9", background: "hsl(var(--surface))" }}>
+            <div className="rounded-xl overflow-hidden" style={{ aspectRatio: "16/9", background: "hsl(var(--emerald))" }}>
               <iframe src={project.videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")} className="w-full h-full" allowFullScreen />
             </div>
           </div>
@@ -197,7 +197,7 @@ export default async function ProjectPage({ params, searchParams }: Props) {
             <h2 className="text-xs font-medium uppercase tracking-widest" style={{ color: "hsl(var(--text-subtle))" }}>Gallery</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {gallery.map((img, i) => (
-                <div key={i} className="rounded-lg overflow-hidden h-36" style={{ background: "hsl(var(--surface))" }}>
+                <div key={i} className="rounded-lg overflow-hidden h-36" style={{ background: "hsl(var(--emerald))" }}>
                   <img src={img} alt="" className="w-full h-full object-cover" />
                 </div>
               ))}

@@ -22,7 +22,7 @@ export default async function DataRoomPage({ params }: { params: Promise<{ slug:
   const project = await prisma.project.findUnique({ where: { slug } })
   if (!project) redirect("/projects")
 
-  const [grant, ndaReq, documents, folders, recentActivity, questions] = await Promise.all([
+  const [grant, ndaReq, documents, folders, recentActivity, questions, projectUpdates] = await Promise.all([
     prisma.accessGrant.findUnique({ where: { userId_projectId: { userId: user.id, projectId: project.id } } }),
     prisma.ndaRequest.findFirst({ where: { userId: user.id, projectId: project.id }, orderBy: { createdAt: "desc" } }),
     prisma.document.findMany({
@@ -45,6 +45,11 @@ export default async function DataRoomPage({ params }: { params: Promise<{ slug:
     prisma.projectQuestion.findMany({
       where: { projectId: project.id, userId: user.id, parentId: null },
       orderBy: { createdAt: "desc" },
+    }),
+    prisma.projectUpdate.findMany({
+      where: { projectId: project.id, isPublic: true },
+      orderBy: { createdAt: "desc" },
+      take: 20,
     }),
   ])
 
@@ -83,8 +88,8 @@ export default async function DataRoomPage({ params }: { params: Promise<{ slug:
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div>
-              <h1 className="page-title">Secure Project Data Room</h1>
-              <p className="page-subtitle">Investment platform with secure data rooms for investors to browse and invest in projects.</p>
+              <h1 className="page-title">{project.name}</h1>
+              <p className="page-subtitle">{project.summary ? project.summary.slice(0, 100) + (project.summary.length > 100 ? "…" : "") : "Secure investment data room"}</p>
             </div>
           </div>
           <button className="btn btn-primary btn-lg shrink-0">
@@ -109,6 +114,7 @@ export default async function DataRoomPage({ params }: { params: Promise<{ slug:
             documents={documents}
             recentActivity={serializedActivity}
             questions={serializedQuestions}
+            updates={projectUpdates.map(u => ({ ...u, createdAt: u.createdAt.toISOString() }))}
             userId={user.id}
           />
         )}
