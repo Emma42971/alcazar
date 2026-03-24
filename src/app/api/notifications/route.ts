@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma"
 
 export async function GET() {
   try {
-  const session = await auth()
+    const session = await auth()
     if (!session?.user?.id) return NextResponse.json([], { status: 401 })
     const notifs = await prisma.notification.findMany({
       where: { userId: session.user.id },
@@ -13,15 +13,14 @@ export async function GET() {
       take: 50,
     })
     return NextResponse.json(notifs)
-  }
   } catch (e: any) {
-    console.error(e)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
+
 export async function PATCH(req: NextRequest) {
   try {
-  const session = await auth()
+    const session = await auth()
     if (!session?.user?.id) return NextResponse.json({}, { status: 401 })
     const { id, all } = await req.json()
     if (all) {
@@ -33,9 +32,7 @@ export async function PATCH(req: NextRequest) {
       await prisma.notification.update({ where: { id }, data: { readAt: new Date() } })
     }
     return NextResponse.json({ success: true })
-  }
   } catch (e: any) {
-    console.error(e)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

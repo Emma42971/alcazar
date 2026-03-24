@@ -7,28 +7,21 @@ import crypto from "crypto"
 
 export async function POST(req: NextRequest) {
   try {
-  const session = await auth()
+    const session = await auth()
     if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  
     const { documentId, projectId, event, durationMs } = await req.json()
     if (!documentId || !projectId || !event) return NextResponse.json({ error: "Missing fields" }, { status: 400 })
-  
-    // Verify access before logging
     const isAdmin = (session.user as any).role === "ADMIN"
     if (!isAdmin) {
       const grant = await prisma.accessGrant.findUnique({
         where: { userId_projectId: { userId: session.user.id, projectId } }
       })
-      if (!grant || grant.revokedAt) {
-        return NextResponse.json({ error: "Access denied" }, { status: 403 })
-      }
+      if (!grant || grant.revokedAt) return NextResponse.json({ error: "Access denied" }, { status: 403 })
     }
-  
     const ipHash = crypto.createHash("sha256").update(req.headers.get("x-forwarded-for") ?? "unknown").digest("hex")
     await prisma.documentActivity.create({
       data: { documentId, userId: session.user.id, projectId, event, durationMs: durationMs ?? null, ipHash, userAgent: req.headers.get("user-agent") ?? "" }
     })
-  
     if (event === "open") {
       const project = await prisma.project.findUnique({ where: { id: projectId }, select: { notifyOnOpen: true, name: true } })
       if (project?.notifyOnOpen) {
@@ -38,15 +31,13 @@ export async function POST(req: NextRequest) {
             prisma.document.findUnique({ where: { id: documentId }, select: { name: true } }),
             prisma.investorProfile.findUnique({ where: { userId: session.user.id } })
           ])
-          const name = profile ? `${profile.firstName} ${profile.lastName}` : session.user.email!
+          const name = profile ? `${profile?.firstName} ${profile?.lastName}` : session.user.email!
           await sendEmail({ type: "first-document-open", investorName: name, docName: doc?.name ?? "a document", projectName: project.name })
         }
       }
     }
     return NextResponse.json({ success: true })
-  }
   } catch (e: any) {
-    console.error(e)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
