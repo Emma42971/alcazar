@@ -1,3 +1,4 @@
+import { InvestorHeader } from "@/components/investor/InvestorHeader"
 export const dynamic = "force-dynamic"
 import { prisma } from "@/lib/prisma"
 import { MarketplaceClient } from "./MarketplaceClient"
@@ -63,10 +64,13 @@ export default async function MarketplacePage({
   })
 
   return (
-    <MarketplaceClient
+    <div className="min-h-screen" style={{ background: "hsl(var(--bg))" }}>
+      <InvestorHeader />
+      <MarketplaceClient
       listings={listings.map(serialize)}
       featured={featured.map(serialize)}
       categories={categories}
     />
+    </div>
   )
 }

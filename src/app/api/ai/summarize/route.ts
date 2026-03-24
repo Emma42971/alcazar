@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/session"
 
 export async function POST(req: NextRequest) {
+  try {
   await requireAdmin()
   const { text, type } = await req.json()
   if (!text) return NextResponse.json({ error: "No text" }, { status: 400 })
@@ -32,5 +33,8 @@ export async function POST(req: NextRequest) {
   if (!response.ok) return NextResponse.json({ error: "AI error" }, { status: 500 })
   const data = await response.json()
   const result = data.content?.[0]?.text ?? ""
-  return NextResponse.json({ result })
+  return NextResponse.json({ result })  } catch (e: any) {
+    console.error("[AI]", e)
+    return NextResponse.json({ error: "AI service error" }, { status: 500 })
+  }
 }

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { dueDiligenceAnalysis } from "@/lib/ai"
 
 export async function POST(req: NextRequest) {
+  try {
   await requireAdmin()
   const { projectId } = await req.json()
 
@@ -13,5 +14,8 @@ export async function POST(req: NextRequest) {
 
   const text = `${project.name}\n${project.description ?? project.summary ?? ""}\nSector: ${project.sector}\nRisk: ${project.riskLevel}`
   const analysis = await dueDiligenceAnalysis(text)
-  return NextResponse.json(analysis)
+  return NextResponse.json(analysis)  } catch (e: any) {
+    console.error("[AI]", e)
+    return NextResponse.json({ error: "AI service error" }, { status: 500 })
+  }
 }

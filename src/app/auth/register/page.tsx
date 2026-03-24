@@ -40,6 +40,7 @@ export default function RegisterPage() {
     if (password !== confirmPassword) { setError("Passwords don't match."); return }
     if (password.length < 8) { setError("Password must be at least 8 characters."); return }
     if (!investorType) { setError("Please select an investor type."); return }
+    if (phoneNum.replace(/\D/g, "").length < 6) { setError("Please enter a valid phone number."); return }
 
     setLoading(true)
     const phone = `${dialCode} ${phoneNum}`.trim()

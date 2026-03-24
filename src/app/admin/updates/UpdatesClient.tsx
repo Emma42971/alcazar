@@ -68,7 +68,7 @@ export function UpdatesClient() {
             disabled={status === "pulling" || status === "building"}
             className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-opacity"
             style={{
-              background: "hsl(var(--emerald))", color: "white",
+              background: "hsl(var(--emerald))", color: "hsl(var(--text-inverted, #fff))",
               opacity: (status === "pulling" || status === "building") ? 0.6 : 1
             }}
           >

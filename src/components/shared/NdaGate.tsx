@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Loader2, PenLine } from "lucide-react"
@@ -20,9 +20,23 @@ type Props = {
 export function NdaGate({ project, user, hasAccess, ndaStatus }: Props) {
   const router = useRouter()
   const [signerName, setSignerName] = useState("")
+
+  // Pre-fill signer name from profile
   const [agreed, setAgreed] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Pre-fill signer name from user profile
+  useEffect(() => {
+    if (user?.email && !signerName) {
+      fetch("/api/me").then(r => r.json()).then(d => {
+        if (d?.profile) {
+          const name = `${d.profile.firstName ?? ""} ${d.profile.lastName ?? ""}`.trim()
+          if (name) setSignerName(name)
+        }
+      }).catch(() => {})
+    }
+  }, [user?.email])
   const [drawing, setDrawing] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const lastPos = useRef<{ x: number; y: number } | null>(null)

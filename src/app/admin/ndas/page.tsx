@@ -41,7 +41,7 @@ export default async function NdasPage() {
               <thead><tr><th>Investor</th><th>Project</th><th>Status</th><th>Submitted</th><th>Actions</th></tr></thead>
               <tbody>
                 {ndas.map(n => {
-                  const name = n.user.profile ? `${n.user.profile.firstName} ${n.user.profile.lastName}` : n.user.email
+                  const name = n.user.profile ? `${n.user.profile?.firstName} ${n.user.profile?.lastName}` : n.user.email
                   return (
                     <tr key={n.id}>
                       <td>

@@ -99,11 +99,10 @@ export default async function DataRoomPage({ params }: { params: Promise<{ slug:
 
         {!hasAccess ? (
           <NdaGate
-            projectId={project.id}
-            projectName={project.name}
-            ndaText={ndaText}
-            ndaRequired={project.ndaRequired}
-            ndaStatus={ndaReq?.status ?? null}
+            project={project}
+            user={user}
+            hasAccess={hasAccess}
+            ndaStatus={ndaRow?.status ?? ndaReq?.status ?? null}
           />
         ) : (
           <DataRoomClient

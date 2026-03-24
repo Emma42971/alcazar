@@ -55,7 +55,6 @@ async function executeAction(rule: any, context: { userId?: string; projectId?: 
 
   if (action === "SEND_EMAIL" && userId && actionData?.subject) {
     // Placeholder — extend with custom email sending
-    console.log(`Workflow email to ${userId}: ${actionData.subject}`)
   }
 
   if (action === "SET_PIPELINE_STAGE" && userId && actionData?.stage) {

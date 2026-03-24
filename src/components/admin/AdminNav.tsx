@@ -93,7 +93,7 @@ export function AdminNav() {
               {group.group}
             </p>
             <div className="space-y-0.5">
-              {group.items.map(({ href, label, icon: Icon, external }: any) => {
+              {group.items.filter(({ superOnly }: any) => !superOnly).map(({ href, label, icon: Icon, external }: any) => {
                 const active = isActive(href)
                 if (external) {
                   return (

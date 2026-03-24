@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     ["Project", "Investor", "Category", "Status", "Question", "Answer", "Date", "Answered At"],
     ...questions.map(q => [
       q.project.name,
-      q.user.profile ? `${q.user.profile.firstName} ${q.user.profile.lastName}` : q.user.email,
+      q.user.profile ? `${q.user.profile?.firstName} ${q.user.profile?.lastName}` : q.user.email,
       q.category,
       q.status,
       q.question.replace(/"/g, '""'),

@@ -33,6 +33,7 @@ export function DataRoomClient({
   const [qaText, setQaText] = useState("")
   const [qaLoading, setQaLoading] = useState(false)
   const [qaSuccess, setQaSuccess] = useState(false)
+  const [openingDoc, setOpeningDoc] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<"files" | "updates" | "activity" | "qa">("files")
   const [chatText, setChatText] = useState("")
   const [chatLoading, setChatLoading] = useState(false)
@@ -190,7 +191,7 @@ export function DataRoomClient({
                 {recentActivity.map(a => (
                   <div key={a.id} className="flex items-center gap-3 px-5 py-3">
                     <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0"
-                      style={{ background: "hsl(var(--navy))", color: "white" }}>
+                      style={{ background: "hsl(var(--navy))", color: "hsl(var(--text-inverted, #fff))" }}>
                       {a.investorName.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -269,7 +270,7 @@ export function DataRoomClient({
               {recentActivity.slice(0, 6).map(a => (
                 <div key={a.id} className="flex items-start gap-2.5 px-4 py-3">
                   <div className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
-                    style={{ background: "hsl(var(--navy))", color: "white" }}>
+                    style={{ background: "hsl(var(--navy))", color: "hsl(var(--text-inverted, #fff))" }}>
                     {a.investorName.charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0">

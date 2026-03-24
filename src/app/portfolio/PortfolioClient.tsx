@@ -213,7 +213,7 @@ export function PortfolioClient({ investments, distributions, summary, referral,
               ].map(([step, desc], i) => (
                 <div key={i} className="flex gap-3">
                   <div className="h-6 w-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold text-white"
-                    style={{ background: "hsl(var(--emerald))" }}>{i + 1}</div>
+                    style={{ background: "hsl(var(--navy))" }}>{i + 1}</div>
                   <div>
                     <p className="text-sm font-medium" style={{ color: "hsl(var(--text))" }}>{step}</p>
                     <p className="text-xs" style={{ color: "hsl(var(--text-muted))" }}>{desc}</p>

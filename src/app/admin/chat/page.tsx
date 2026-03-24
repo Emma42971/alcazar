@@ -15,7 +15,7 @@ export default async function AdminChatPage() {
   ])
   const serialized = investors.map(i => ({
     id: i.id, email: i.email,
-    name: i.profile ? `${i.profile.firstName} ${i.profile.lastName}` : i.email
+    name: i.profile ? `${i.profile?.firstName} ${i.profile?.lastName}` : i.email
   }))
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-5">

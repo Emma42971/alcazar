@@ -32,7 +32,7 @@ export default async function InquiriesPage() {
       ) : (
         <div className="space-y-3">
           {inquiries.map(inq => {
-            const name = inq.user.profile ? `${inq.user.profile.firstName} ${inq.user.profile.lastName}` : inq.user.email
+            const name = inq.user.profile ? `${inq.user.profile?.firstName} ${inq.user.profile?.lastName}` : inq.user.email
             return (
               <div key={inq.id} className="card card-p space-y-3"
                 style={{ borderLeft: inq.status === "NEW" ? "3px solid hsl(var(--blue))" : "1px solid hsl(var(--border))" }}>

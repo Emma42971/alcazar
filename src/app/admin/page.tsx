@@ -174,7 +174,7 @@ export default async function AdminDashboardPage() {
               <thead><tr><th>Heure</th><th>Investisseur</th><th>Document</th><th>Projet</th><th>Événement</th></tr></thead>
               <tbody>
                 {recentActivity.map(a => {
-                  const name = a.user.profile ? `${a.user.profile.firstName} ${a.user.profile.lastName}` : a.user.email
+                  const name = a.user.profile ? `${a.user.profile?.firstName} ${a.user.profile?.lastName}` : a.user.email
                   return (
                     <tr key={a.id}>
                       <td className="whitespace-nowrap text-xs" style={{ color: "hsl(var(--text-subtle))" }}>

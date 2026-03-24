@@ -73,7 +73,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ path
       })
     } catch (e) {
       console.error("[files] watermark error:", e)
-      // Fall through to serve original only if watermark fails — log it
+      // Never serve unwatermarked PDF to investors — return error
+      return NextResponse.json({ error: "Document processing error" }, { status: 500 })
     }
   }
 

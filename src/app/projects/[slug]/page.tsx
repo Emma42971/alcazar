@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/session"
 import { notFound } from "next/navigation"
 import { formatCurrency, formatIrr, countdownDays, fundraisingPercent } from "@/lib/utils"
 import { NdaGate } from "@/components/shared/NdaGate"
+import { InvestorHeader } from "@/components/investor/InvestorHeader"
 import Link from "next/link"
 import type { Metadata } from "next"
 
@@ -28,27 +29,32 @@ export default async function ProjectPage({ params, searchParams }: Props) {
   const project = await prisma.project.findUnique({ where: { slug } })
   if (!project) notFound()
 
-  // Access check
-  const isAdmin      = user?.role === "ADMIN"
-  const isPreview    = isAdmin && preview === "1"
-  const hasAccess    = isAdmin && !isPreview
+  const isAdmin   = user?.role === "ADMIN"
+  const isPreview = isAdmin && preview === "1"
+  const hasAccess = isAdmin && !isPreview
     ? true
     : user
-    ? !!(await prisma.accessGrant.findUnique({ where: { userId_projectId: { userId: user.id, projectId: project.id } } }))
+    ? !!(await prisma.accessGrant.findUnique({
+        where: { userId_projectId: { userId: user.id, projectId: project.id } }
+      }))
     : false
 
   const ndaRow = user
-    ? await prisma.ndaRequest.findFirst({ where: { userId: user.id, projectId: project.id }, orderBy: { createdAt: "desc" } })
+    ? await prisma.ndaRequest.findFirst({
+        where: { userId: user.id, projectId: project.id },
+        orderBy: { createdAt: "desc" }
+      })
     : null
 
+  // Private project with no public teaser — redirect to login
   if (!user && !project.teaserPublic) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "hsl(var(--emerald))" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "hsl(var(--bg))" }}>
         <div className="text-center space-y-4 max-w-sm px-4">
           <div className="text-4xl">🔒</div>
-          <h1 className="text-xl" style={{ fontFamily: 'inherit' }}>Private project</h1>
-          <p className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>Sign in to access this project.</p>
-          <Link href={`/?redirect=/projects/${slug}`} className="btn btn-secondary">Sign In</Link>
+          <h1 className="text-xl font-semibold" style={{ color: "hsl(var(--text))" }}>Private project</h1>
+          <p className="text-sm" style={{ color: "hsl(var(--text-muted))" }}>Sign in to access this project.</p>
+          <Link href={`/?redirect=/projects/${slug}`} className="btn btn-primary">Sign In</Link>
         </div>
       </div>
     )
@@ -59,27 +65,38 @@ export default async function ProjectPage({ params, searchParams }: Props) {
   const pct        = fundraisingPercent(project.raisedAmount, project.targetRaise)
   const days       = countdownDays(project.closingDate)
   const pm         = project.publicMetrics as Record<string, boolean> | null
-
   const metricVisible = (key: string) => hasAccess || pm?.[key] !== false
 
   const documents = hasAccess
-    ? await prisma.document.findMany({ where: { projectId: project.id, supersededBy: null }, orderBy: { createdAt: "asc" } })
+    ? await prisma.document.findMany({
+        where: { projectId: project.id, supersededBy: null },
+        orderBy: { sortOrder: "asc" }
+      })
     : []
 
   return (
-    <div className="min-h-screen" style={{ background: "hsl(var(--emerald))" }}>
+    <div className="min-h-screen" style={{ background: "hsl(var(--bg))" }}>
+      <InvestorHeader />
+
       {/* Breadcrumb */}
-      <div className="border-b px-4 sm:px-6 py-2.5 flex items-center gap-2 text-xs" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>
-        <Link href="/projects" className="hover:text-white transition-colors">All projects</Link>
-        <span>›</span>
-        <span style={{ color: "hsl(var(--text-subtle))" }}>{project.name}</span>
-        {isPreview && <span className="ml-2 px-2 py-0.5 rounded text-xs" style={{ background: "hsl(38 92% 50% / 0.15)", color: "hsl(38 92% 60%)", border: "1px solid hsl(38 92% 50% / 0.3)" }}>Preview mode</span>}
+      <div className="border-b px-4 sm:px-6 py-2.5 flex items-center gap-2 text-xs"
+        style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-muted))", background: "hsl(var(--surface))" }}>
+        <Link href="/projects" className="hover:underline transition-colors" style={{ color: "hsl(var(--text-subtle))" }}>All projects</Link>
+        <span style={{ color: "hsl(var(--text-muted))" }}>›</span>
+        <span style={{ color: "hsl(var(--text))" }}>{project.name}</span>
+        {isPreview && (
+          <span className="ml-2 px-2 py-0.5 rounded text-xs"
+            style={{ background: "hsl(38 92% 50% / 0.15)", color: "hsl(38 92% 60%)", border: "1px solid hsl(38 92% 50% / 0.3)" }}>
+            Preview mode
+          </span>
+        )}
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-10">
-        {/* Cover */}
+
+        {/* Cover image */}
         {project.coverImage && (
-          <div className="rounded-xl overflow-hidden h-56 sm:h-72" style={{ background: "hsl(var(--emerald))" }}>
+          <div className="rounded-xl overflow-hidden h-56 sm:h-72" style={{ background: "hsl(var(--navy))" }}>
             <img src={project.coverImage} alt="" className="w-full h-full object-cover" />
           </div>
         )}
@@ -87,25 +104,30 @@ export default async function ProjectPage({ params, searchParams }: Props) {
         {/* Header */}
         <div className="flex items-start gap-4">
           {project.logoImage && (
-            <img src={project.logoImage} alt="" className="h-14 w-14 rounded-xl object-cover shrink-0 border" style={{ borderColor: "hsl(var(--border))" }} />
+            <img src={project.logoImage} alt="" className="h-14 w-14 rounded-xl object-cover shrink-0 border"
+              style={{ borderColor: "hsl(var(--border))" }} />
           )}
           <div className="space-y-2 flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               {project.sector && (
-                <Link href={`/projects?sector=${encodeURIComponent(project.sector)}`} className="text-xs px-2.5 py-1 rounded-full border transition-colors" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>
+                <Link href={`/projects?sector=${encodeURIComponent(project.sector)}`}
+                  className="text-xs px-2.5 py-1 rounded-full border transition-colors"
+                  style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>
                   {project.sector}
                 </Link>
               )}
-              {project.country && <span className="text-xs" style={{ color: "hsl(var(--text-subtle))" }}>📍 {project.country}</span>}
+              {project.country && <span className="text-xs" style={{ color: "hsl(var(--text-muted))" }}>📍 {project.country}</span>}
               <span className="badge badge-approved text-xs">{project.status}</span>
               {project.isFeatured && <span className="badge badge-new text-xs">Featured</span>}
             </div>
-            <h1 className="text-2xl sm:text-3xl font-semibold" style={{ fontFamily: 'inherit' }}>{project.name}</h1>
-            {project.summary && <p className="text-sm leading-relaxed max-w-2xl" style={{ color: "hsl(var(--text-subtle))" }}>{project.summary}</p>}
+            <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: "hsl(var(--text))" }}>{project.name}</h1>
+            {project.summary && (
+              <p className="text-sm leading-relaxed max-w-2xl" style={{ color: "hsl(var(--text-subtle))" }}>{project.summary}</p>
+            )}
           </div>
         </div>
 
-        {/* Countdown + progress */}
+        {/* Countdown + progress bar */}
         <div className="space-y-3">
           {days !== null && days >= 0 && (
             <p className="text-sm font-medium" style={{ color: "hsl(38 92% 55%)" }}>
@@ -116,56 +138,59 @@ export default async function ProjectPage({ params, searchParams }: Props) {
             <div className="space-y-1.5">
               <div className="flex justify-between text-sm">
                 <span style={{ color: "hsl(var(--text-subtle))" }}>Raised</span>
-                <span style={{ color: "hsl(var(--text-subtle))" }}>
+                <span style={{ color: "hsl(var(--text))" }}>
                   {formatCurrency(project.raisedAmount)}{project.targetRaise ? ` / ${formatCurrency(project.targetRaise)}` : ""}
                 </span>
               </div>
-              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "hsl(var(--emerald))" }}>
-                <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "hsl(var(--emerald))" }} />
+              {/* Progress bar — bg-subtle track, emerald fill */}
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "hsl(var(--bg-subtle))" }}>
+                <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: "hsl(var(--emerald))" }} />
               </div>
             </div>
           )}
         </div>
 
-        {/* Metrics */}
+        {/* Metric cards */}
         {[
-          { label: "IRR Target",    value: formatIrr(project.irrTargetBps),        show: metricVisible("irr") && !!project.irrTargetBps },
-          { label: "Min. Ticket",   value: formatCurrency(project.minTicket),       show: metricVisible("minTicket") && !!project.minTicket },
-          { label: "Target Raise",  value: formatCurrency(project.targetRaise),     show: !!project.targetRaise },
-          { label: "Duration",      value: project.expectedDuration,                show: !!project.expectedDuration },
-          { label: "Risk Level",    value: project.riskLevel,                       show: !!project.riskLevel },
-          { label: "Type",          value: project.investmentType,                  show: !!project.investmentType },
-        ].filter(m => m.show).length > 0 && (
+          { label: "IRR Target",   value: formatIrr(project.irrTargetBps),      show: metricVisible("irr") && !!project.irrTargetBps,      locked: !metricVisible("irr") && !!project.irrTargetBps },
+          { label: "Min. Ticket",  value: formatCurrency(project.minTicket),     show: metricVisible("minTicket") && !!project.minTicket,    locked: !metricVisible("minTicket") && !!project.minTicket },
+          { label: "Target Raise", value: formatCurrency(project.targetRaise),   show: !!project.targetRaise,  locked: false },
+          { label: "Duration",     value: project.expectedDuration,              show: !!project.expectedDuration, locked: false },
+          { label: "Risk",         value: project.riskLevel,                     show: !!project.riskLevel,    locked: false },
+          { label: "Type",         value: project.investmentType,                show: !!project.investmentType, locked: false },
+        ].filter(m => m.show || m.locked).length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { label: "IRR Target",    value: formatIrr(project.irrTargetBps),   show: metricVisible("irr") && !!project.irrTargetBps,    locked: !metricVisible("irr") && !!project.irrTargetBps },
-              { label: "Min. Ticket",   value: formatCurrency(project.minTicket), show: metricVisible("minTicket") && !!project.minTicket,  locked: !metricVisible("minTicket") && !!project.minTicket },
-              { label: "Target Raise",  value: formatCurrency(project.targetRaise), show: !!project.targetRaise, locked: false },
-              { label: "Duration",      value: project.expectedDuration,           show: !!project.expectedDuration, locked: false },
-              { label: "Risk",          value: project.riskLevel,                  show: !!project.riskLevel, locked: false },
-              { label: "Type",          value: project.investmentType,             show: !!project.investmentType, locked: false },
+              { label: "IRR Target",   value: formatIrr(project.irrTargetBps),    show: metricVisible("irr") && !!project.irrTargetBps,   locked: !metricVisible("irr") && !!project.irrTargetBps },
+              { label: "Min. Ticket",  value: formatCurrency(project.minTicket),   show: metricVisible("minTicket") && !!project.minTicket, locked: !metricVisible("minTicket") && !!project.minTicket },
+              { label: "Target Raise", value: formatCurrency(project.targetRaise), show: !!project.targetRaise,  locked: false },
+              { label: "Duration",     value: project.expectedDuration,            show: !!project.expectedDuration, locked: false },
+              { label: "Risk",         value: project.riskLevel,                   show: !!project.riskLevel,    locked: false },
+              { label: "Type",         value: project.investmentType,              show: !!project.investmentType, locked: false },
             ].filter(m => m.show || m.locked).map(m => (
-              <div key={m.label} className="relative rounded-xl p-4 border" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
+              <div key={m.label} className="relative rounded-xl p-4 border"
+                style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
                 {m.locked && (
-                  <div className="absolute inset-0 rounded-xl flex items-center justify-center" style={{ backdropFilter: "blur(4px)", background: "hsl(var(--bg) / 0.7)" }}>
-                    <span style={{ color: "hsl(var(--text-subtle))" }}>🔒</span>
+                  <div className="absolute inset-0 rounded-xl flex items-center justify-center"
+                    style={{ backdropFilter: "blur(4px)", background: "hsl(var(--bg) / 0.7)" }}>
+                    <span style={{ color: "hsl(var(--text-muted))" }}>🔒</span>
                   </div>
                 )}
-                <p className="text-xs mb-1" style={{ color: "hsl(var(--text-subtle))" }}>{m.label}</p>
-                <p className="text-sm font-medium" style={{ color: "hsl(var(--text-subtle))" }}>{m.value}</p>
+                <p className="text-xs mb-1" style={{ color: "hsl(var(--text-muted))" }}>{m.label}</p>
+                <p className="text-sm font-semibold" style={{ color: "hsl(var(--text))" }}>{m.value}</p>
               </div>
             ))}
           </div>
         )}
 
-        {/* Highlights */}
+        {/* Key Highlights */}
         {highlights.length > 0 && (
           <div className="space-y-3">
-            <h2 className="text-xs font-medium uppercase tracking-widest" style={{ color: "hsl(var(--text-subtle))" }}>Key Highlights</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-widest" style={{ color: "hsl(var(--text-muted))" }}>Key Highlights</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {highlights.map((h, i) => (
                 <div key={i} className="flex items-start gap-2">
-                  <span className="mt-0.5 shrink-0" style={{ color: "hsl(var(--text-subtle))" }}>›</span>
+                  <span className="mt-0.5 shrink-0" style={{ color: "hsl(var(--emerald))" }}>›</span>
                   <p className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>{h}</p>
                 </div>
               ))}
@@ -173,31 +198,34 @@ export default async function ProjectPage({ params, searchParams }: Props) {
           </div>
         )}
 
-        {/* Description (if access) */}
+        {/* Description */}
         {hasAccess && project.description && (
           <div className="space-y-3">
-            <h2 className="text-xs font-medium uppercase tracking-widest" style={{ color: "hsl(var(--text-subtle))" }}>About this project</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-widest" style={{ color: "hsl(var(--text-muted))" }}>About this project</h2>
             <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "hsl(var(--text-subtle))" }}>{project.description}</p>
           </div>
         )}
 
-        {/* Video (if access) */}
+        {/* Video */}
         {hasAccess && project.videoUrl && (
           <div className="space-y-3">
-            <h2 className="text-xs font-medium uppercase tracking-widest" style={{ color: "hsl(var(--text-subtle))" }}>Presentation</h2>
-            <div className="rounded-xl overflow-hidden" style={{ aspectRatio: "16/9", background: "hsl(var(--emerald))" }}>
-              <iframe src={project.videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")} className="w-full h-full" allowFullScreen />
+            <h2 className="text-xs font-semibold uppercase tracking-widest" style={{ color: "hsl(var(--text-muted))" }}>Presentation</h2>
+            {/* navy placeholder while iframe loads */}
+            <div className="rounded-xl overflow-hidden" style={{ aspectRatio: "16/9", background: "hsl(var(--navy))" }}>
+              <iframe
+                src={project.videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")}
+                className="w-full h-full" allowFullScreen />
             </div>
           </div>
         )}
 
-        {/* Gallery (if access) */}
+        {/* Gallery */}
         {hasAccess && gallery.length > 1 && (
           <div className="space-y-3">
-            <h2 className="text-xs font-medium uppercase tracking-widest" style={{ color: "hsl(var(--text-subtle))" }}>Gallery</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-widest" style={{ color: "hsl(var(--text-muted))" }}>Gallery</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {gallery.map((img, i) => (
-                <div key={i} className="rounded-lg overflow-hidden h-36" style={{ background: "hsl(var(--emerald))" }}>
+                <div key={i} className="rounded-lg overflow-hidden h-36" style={{ background: "hsl(var(--navy))" }}>
                   <img src={img} alt="" className="w-full h-full object-cover" />
                 </div>
               ))}
@@ -205,29 +233,42 @@ export default async function ProjectPage({ params, searchParams }: Props) {
           </div>
         )}
 
-        {/* Documents (if access) */}
+        {/* Data Room — documents with allowDownload respected */}
         {hasAccess && !isPreview && (
           <div className="space-y-4">
-            <h2 className="text-white font-medium">Data Room</h2>
+            <h2 className="text-sm font-semibold" style={{ color: "hsl(var(--text))" }}>Data Room</h2>
             {documents.length === 0 ? (
-              <p className="text-sm" style={{ color: "hsl(var(--text-subtle))" }}>No documents uploaded yet.</p>
+              <p className="text-sm" style={{ color: "hsl(var(--text-muted))" }}>No documents uploaded yet.</p>
             ) : (
               <div className="space-y-2">
                 {documents.map(doc => {
-                  const ext = doc.filePath.split(".").pop()?.toUpperCase() ?? "FILE"
-                  const kb  = doc.sizeBytes ? (doc.sizeBytes < 1048576 ? `${Math.round(doc.sizeBytes / 1024)} KB` : `${(doc.sizeBytes / 1048576).toFixed(1)} MB`) : ""
+                  const filename = doc.filePath.split("/").pop()
+                  const ext = filename?.split(".").pop()?.toUpperCase() ?? "FILE"
+                  const kb = doc.sizeBytes
+                    ? (doc.sizeBytes < 1048576 ? `${Math.round(doc.sizeBytes / 1024)} KB` : `${(doc.sizeBytes / 1048576).toFixed(1)} MB`)
+                    : ""
                   return (
-                    <div key={doc.id} className="flex items-center justify-between gap-4 p-4 rounded-xl border" style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
+                    <div key={doc.id} className="flex items-center justify-between gap-4 p-4 rounded-xl border"
+                      style={{ background: "hsl(var(--surface))", borderColor: "hsl(var(--border))" }}>
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold" style={{ background: "hsl(var(--surface))", color: "hsl(var(--text-subtle))" }}>{ext}</div>
+                        <div className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold"
+                          style={{ background: "hsl(var(--bg-subtle))", color: "hsl(var(--text-subtle))" }}>
+                          {ext}
+                        </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium truncate" style={{ color: "hsl(var(--text-subtle))" }}>{doc.name}</p>
-                          <p className="text-xs" style={{ color: "hsl(var(--text-subtle))" }}>{ext}{kb ? ` · ${kb}` : ""}{doc.version > 1 ? ` · v${doc.version}` : ""}</p>
+                          <p className="text-sm font-medium truncate" style={{ color: "hsl(var(--text))" }}>{doc.name}</p>
+                          <p className="text-xs" style={{ color: "hsl(var(--text-muted))" }}>
+                            {ext}{kb ? ` · ${kb}` : ""}{doc.version > 1 ? ` · v${doc.version}` : ""}
+                          </p>
                         </div>
                       </div>
                       <div className="flex gap-2 shrink-0">
-                        <a href={`/api/files/${project.id}/${doc.filePath.split("/").pop()}`} target="_blank" className="text-xs px-3 py-1.5 rounded-lg border transition-colors" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>View</a>
-                        <a href={`/api/files/${project.id}/${doc.filePath.split("/").pop()}?download=1`} className="text-xs px-2 py-1.5 rounded-lg border transition-colors" style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--text-subtle))" }}>↓</a>
+                        <a href={`/api/files/${project.id}/${filename}`} target="_blank"
+                          className="btn btn-secondary btn-sm">View</a>
+                        {doc.allowDownload && (
+                          <a href={`/api/files/${project.id}/${filename}?download=1`}
+                            className="btn btn-secondary btn-sm">↓</a>
+                        )}
                       </div>
                     </div>
                   )

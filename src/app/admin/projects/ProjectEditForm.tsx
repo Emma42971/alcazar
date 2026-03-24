@@ -222,7 +222,7 @@ export function ProjectEditForm({ project }: { project: any | null }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Portal name</label>
-            <input value={brandName} onChange={e => setBrandName(e.target.value)} placeholder="Alcazar Capital" className={inp} style={inpStyle} />
+            <input value={brandName} onChange={e => setBrandName(e.target.value)} placeholder="Your Fund" className={inp} style={inpStyle} />
           </div>
           <div className="space-y-1.5">
             <label className="block text-xs" style={{ color: "hsl(var(--text-subtle))" }}>Brand color</label>

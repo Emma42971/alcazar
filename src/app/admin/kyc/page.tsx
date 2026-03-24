@@ -13,7 +13,7 @@ export default async function KycPage() {
     id: d.id, docType: d.docType, fileName: d.fileName, filePath: d.filePath,
     status: d.status, adminNote: d.adminNote,
     createdAt: d.createdAt.toISOString(),
-    investorName: d.user.profile ? `${d.user.profile.firstName} ${d.user.profile.lastName}` : d.user.email,
+    investorName: d.user.profile ? `${d.user.profile?.firstName} ${d.user.profile?.lastName}` : d.user.email,
     userId: d.userId,
   }))
   return (
