@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Workflows" }
 export default async function WorkflowsPage() {
   const [rules, projects] = await Promise.all([
     prisma.workflowRule.findMany({
-      include: { logs: { orderBy: { createdAt: "desc" }, take: 3 } },
+      include: { logs: { orderBy: { executedAt: "desc" }, take: 3 } },
       orderBy: { createdAt: "desc" },
     }),
     prisma.project.findMany({ select: { id: true, name: true } }),

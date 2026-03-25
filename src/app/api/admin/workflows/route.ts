@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma"
 export async function GET() {
   await requireAdmin()
   const rules = await prisma.workflowRule.findMany({
-    include: { logs: { orderBy: { createdAt: "desc" }, take: 5 } },
+    include: { logs: { orderBy: { executedAt: "desc" }, take: 5 } },
     orderBy: { createdAt: "desc" },
   })
   return NextResponse.json(rules)
