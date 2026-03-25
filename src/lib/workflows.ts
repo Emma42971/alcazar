@@ -55,11 +55,11 @@ export async function executeWorkflows(trigger: TriggerType, context: {
       }
 
       await prisma.workflowLog.create({
-        data: { ruleId: rule.id, userId: context.userId, projectId: context.projectId, status: "success", message: `Executed ${rule.action}` }
+        data: { ruleId: rule.id, userId: context.userId, result: "success", details: `Executed ${rule.action}` }
       })
     } catch(e: any) {
       await prisma.workflowLog.create({
-        data: { ruleId: rule.id, userId: context.userId, projectId: context.projectId, status: "error", message: e.message }
+        data: { ruleId: rule.id, userId: context.userId, result: "error", details: String(e) }
       })
     }
   }

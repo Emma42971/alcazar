@@ -15,9 +15,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   await requireAdmin()
-  const { projectId, investorName, amount, shareClass, entryType, notes } = await req.json()
+  const { projectId, investorName, amount, entryType, note } = await req.json()
   const entry = await prisma.capTableEntry.create({
-    data: { projectId, investorName, amount: BigInt(amount), shareClass, entryType, notes }
+    data: { projectId, investorName, amount: BigInt(amount), entryType: entryType ?? "EQUITY", note: note ?? null }
   })
   return NextResponse.json({ ...entry, amount: Number(entry.amount) })
 }

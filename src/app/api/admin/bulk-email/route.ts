@@ -11,8 +11,9 @@ export async function POST(req: NextRequest) {
   await requireAdmin()
   const { name, subject, body, segment, projectId } = await req.json()
 
+  // Schema fields: subject, body, segment only — no name/projectId/status
   const campaign = await prisma.bulkEmailCampaign.create({
-    data: { name, subject, body, segment, projectId, status: "SENDING" }
+    data: { subject, body, segment: segment ?? "all" }
   })
 
   // Get target users
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   await prisma.bulkEmailCampaign.update({
     where: { id: campaign.id },
-    data: { status: "SENT", sentCount, sentAt: new Date() }
+    data: { sentCount, sentAt: new Date() }
   })
 
   return NextResponse.json({ success: true, sentCount })
