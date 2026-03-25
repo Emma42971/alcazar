@@ -35,8 +35,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     // Email investisseur
     try {
       const firstName = nda.user.profile?.firstName ?? "Investor"
+      // Serve signed NDA PDF via protected admin route
       const pdfUrl = nda.signedPdfPath
-        ? `${process.env.NEXTAUTH_URL}/api/files/ndas/${nda.signedPdfPath.split("/").pop()}`
+        ? `${process.env.NEXTAUTH_URL}/api/admin/nda/${nda.id}/pdf`
         : undefined
       await sendNdaApprovedEmail(nda.user.email, firstName, nda.project.name, pdfUrl)
     } catch (e) {

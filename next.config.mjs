@@ -2,9 +2,8 @@
 const nextConfig = {
   output: "standalone",
   typescript: {
-    // Type errors will show as warnings but won't fail the build
-    // Fix them progressively — they don't affect runtime behavior
-    ignoreBuildErrors: true,
+    // Type errors now fail the build — fix progressively
+    ignoreBuildErrors: false,
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -21,6 +20,23 @@ const nextConfig = {
           { key: "Referrer-Policy",          value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy",       value: "camera=(), microphone=(), geolocation=()" },
           { key: "X-XSS-Protection",        value: "1; mode=block" },
+          {
+            key: "Content-Security-Policy",
+            // 'unsafe-inline' required for Next.js inline scripts + styles
+            // Tighten script-src progressively as nonces are adopted
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob: https:",
+              "font-src 'self' data:",
+              "connect-src 'self' https:",
+              "frame-src 'self' https://www.youtube.com https://player.vimeo.com",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join("; "),
+          },
         ],
       },
       {

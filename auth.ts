@@ -15,13 +15,19 @@ import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { createPool } from "mariadb"
 
-// Direct mariadb connection — bypasses Prisma entirely for auth
+// Required env vars — fail fast at startup if missing
+// Required: DB_HOST, DB_PORT, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, AUTH_SECRET
+const REQUIRED_ENVS = ["DB_HOST", "MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_DATABASE", "AUTH_SECRET"] as const
+for (const key of REQUIRED_ENVS) {
+  if (!process.env[key]) throw new Error(`[auth] Missing required environment variable: ${key}`)
+}
+
 const pool = createPool({
-  host:     process.env.DB_HOST     ?? "172.28.0.2",
-  port:     Number(process.env.DB_PORT) || 3306,
-  user:     process.env.MYSQL_USER     ?? "alcazar_user",
-  password: process.env.MYSQL_PASSWORD ?? "AlcazarDB2026x",
-  database: process.env.MYSQL_DATABASE ?? "alcazar_portal",
+  host:            process.env.DB_HOST!,
+  port:            Number(process.env.DB_PORT ?? 3306),
+  user:            process.env.MYSQL_USER!,
+  password:        process.env.MYSQL_PASSWORD!,
+  database:        process.env.MYSQL_DATABASE!,
   connectionLimit: 5,
 })
 
@@ -59,40 +65,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
-
         try {
           const user = await findUserByEmail(credentials.email as string)
-          if (!user) {
-            console.log("[auth] user not found:", credentials.email)
-            return null
-          }
+          if (!user) return null
 
           const valid = await bcrypt.compare(credentials.password as string, user.password)
-          if (!valid) {
-            console.log("[auth] invalid password for:", credentials.email)
-            return null
-          }
-
-          if (user.status === "REJECTED") {
-            console.log("[auth] user rejected:", credentials.email)
-            return null
-          }
+          if (!valid) return null
+          if (user.status === "REJECTED") return null
 
           const name = user.first_name
             ? `${user.first_name} ${user.last_name}`
             : user.email
 
-          console.log("[auth] login success:", user.email, user.role)
-
-          return {
-            id:     user.id,
-            email:  user.email,
-            role:   user.role,
-            status: user.status,
-            name,
-          }
+          return { id: user.id, email: user.email, role: user.role, status: user.status, name }
         } catch (e) {
-          console.error("[auth] authorize error:", e)
+          console.error("[auth] authorize error")
           return null
         }
       }

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation"
 export type SessionUser = {
   id: string
   email: string
-  role: "ADMIN" | "INVESTOR"
+  role: "ADMIN" | "SUPER_ADMIN" | "INVESTOR"
   status: string
 }
 
@@ -21,15 +21,22 @@ export async function requireAuth(): Promise<SessionUser> {
   return user
 }
 
+// Accepts both ADMIN and SUPER_ADMIN — consistent with middleware
 export async function requireAdmin(): Promise<SessionUser> {
   const user = await requireAuth()
-  if (user.role !== "ADMIN") redirect("/dashboard")
+  if (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") redirect("/dashboard")
+  return user
+}
+
+export async function requireSuperAdmin(): Promise<SessionUser> {
+  const user = await requireAuth()
+  if (user.role !== "SUPER_ADMIN") redirect("/admin")
   return user
 }
 
 export async function requireInvestor(): Promise<SessionUser> {
   const user = await requireAuth()
-  if (user.role === "ADMIN") redirect("/admin")
+  if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") redirect("/admin")
   if (user.status !== "APPROVED") redirect("/auth/pending")
   return user
 }

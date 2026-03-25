@@ -21,7 +21,7 @@ export function NdaActionsClient({ id, signedPdfPath }: { id: string; signedPdfP
   return (
     <div className="flex items-center gap-2">
       {signedPdfPath && (
-        <a href={signedPdfPath} target="_blank" className="btn btn-secondary btn-sm btn-icon" title="Download signed NDA">
+        <a href={signedPdfPath} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm btn-icon" title="Download signed NDA">
           <Download className="h-3.5 w-3.5" />
         </a>
       )}

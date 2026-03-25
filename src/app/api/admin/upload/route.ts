@@ -25,6 +25,11 @@ export async function POST(req: NextRequest) {
   const ext = extname(file.name).toLowerCase()
   if (!ALLOWED.includes(ext)) return NextResponse.json({ error: `File type ${ext} not allowed` }, { status: 400 })
 
+  const MAX_SIZE = 50 * 1024 * 1024 // 50 MB for admin uploads
+  if (file.size > MAX_SIZE) {
+    return NextResponse.json({ error: "File exceeds 50 MB limit" }, { status: 400 })
+  }
+
   const uploadDir = join(process.env.UPLOAD_DIR ?? "/app/uploads", projectId)
   await mkdir(uploadDir, { recursive: true })
   const filename = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`

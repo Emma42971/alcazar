@@ -4,6 +4,18 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM   = process.env.RESEND_FROM_EMAIL ?? "noreply@example.com"
 const PORTAL = process.env.NEXTAUTH_URL ?? "https://example.com"
 
+// Escape HTML special chars in user-supplied strings to prevent HTML injection
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
+
+
+
 function baseTemplate(content: string, title: string): string {
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
@@ -34,7 +46,7 @@ function baseTemplate(content: string, title: string): string {
 
 export async function sendWelcomeEmail(to: string, firstName: string) {
   const content = `
-    <p>Hi ${firstName},</p>
+    <p>Hi ${escapeHtml(firstName)},</p>
     <p>Thank you for registering on the Alcazar Investor Portal. Your account is currently under review.</p>
     <p>You will receive an email once your account has been approved by our team, typically within 1–2 business days.</p>
     <div class="highlight"><p>💡 Make sure to check your spam folder if you don't hear back from us.</p></div>
@@ -45,7 +57,7 @@ export async function sendWelcomeEmail(to: string, firstName: string) {
 
 export async function sendApprovalEmail(to: string, firstName: string) {
   const content = `
-    <p>Hi ${firstName},</p>
+    <p>Hi ${escapeHtml(firstName)},</p>
     <p>Great news — your investor account has been approved. You can now access the portal.</p>
     <a href="${PORTAL}" class="btn">Access Investor Portal →</a>
     <div class="divider"></div>
@@ -56,8 +68,8 @@ export async function sendApprovalEmail(to: string, firstName: string) {
 
 export async function sendNdaApprovedEmail(to: string, firstName: string, projectName: string, pdfUrl?: string) {
   const content = `
-    <p>Hi ${firstName},</p>
-    <p>Your NDA for <strong>${projectName}</strong> has been approved. You now have full access to the project's data room.</p>
+    <p>Hi ${escapeHtml(firstName)},</p>
+    <p>Your NDA for <strong>${escapeHtml(projectName)}</strong> has been approved. You now have full access to the project's data room.</p>
     <a href="${PORTAL}/dashboard" class="btn">Access Data Room →</a>
     ${pdfUrl ? `<div class="highlight"><p>📄 <a href="${pdfUrl}" style="color:#1e40af">Download your signed NDA</a></p></div>` : ""}
     <p>Best regards,<br><strong>The Alcazar Team</strong></p>`
@@ -66,13 +78,13 @@ export async function sendNdaApprovedEmail(to: string, firstName: string, projec
 
 export async function sendQaAnswerEmail(to: string, firstName: string, projectName: string, question: string, answer: string) {
   const content = `
-    <p>Hi ${firstName},</p>
-    <p>Your question about <strong>${projectName}</strong> has been answered:</p>
+    <p>Hi ${escapeHtml(firstName)},</p>
+    <p>Your question about <strong>${escapeHtml(projectName)}</strong> has been answered:</p>
     <div class="highlight">
-      <p><strong>Q:</strong> ${question}</p>
+      <p><strong>Q:</strong> ${escapeHtml(question)}</p>
     </div>
     <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:14px 16px;margin:16px 0;">
-      <p style="margin:0;font-size:13px;color:#166534;"><strong>A:</strong> ${answer}</p>
+      <p style="margin:0;font-size:13px;color:#166534;"><strong>A:</strong> ${escapeHtml(answer)}</p>
     </div>
     <a href="${PORTAL}/dashboard" class="btn">View in Portal →</a>
     <p>Best regards,<br><strong>The Alcazar Team</strong></p>`
@@ -83,30 +95,30 @@ export async function sendAdminNewInvestorEmail(adminEmail: string, investorEmai
   const content = `
     <p>A new investor has registered on the portal and is awaiting approval.</p>
     <div class="highlight">
-      <p><strong>Name:</strong> ${investorName}<br><strong>Email:</strong> ${investorEmail}</p>
+      <p><strong>Name:</strong> ${escapeHtml(investorName)}<br><strong>Email:</strong> ${escapeHtml(investorEmail)}</p>
     </div>
     <a href="${PORTAL}/admin/investors" class="btn">Review in Admin Panel →</a>`
-  await resend.emails.send({ from: FROM, to: adminEmail, subject: `New investor registration — ${investorName}`, html: baseTemplate(content, "New Investor Registration") })
+  await resend.emails.send({ from: FROM, to: adminEmail, subject: `New investor registration — ${escapeHtml(investorName)}`, html: baseTemplate(content, "New Investor Registration") })
 }
 
 export async function sendAdminNdaSubmittedEmail(adminEmail: string, investorName: string, projectName: string) {
   const content = `
     <p>An investor has submitted an NDA and is awaiting your review.</p>
     <div class="highlight">
-      <p><strong>Investor:</strong> ${investorName}<br><strong>Project:</strong> ${projectName}</p>
+      <p><strong>Investor:</strong> ${escapeHtml(investorName)}<br><strong>Project:</strong> ${escapeHtml(projectName)}</p>
     </div>
     <a href="${PORTAL}/admin/ndas" class="btn">Review NDA →</a>`
-  await resend.emails.send({ from: FROM, to: adminEmail, subject: `NDA submitted — ${investorName} / ${projectName}`, html: baseTemplate(content, "NDA Submitted for Review") })
+  await resend.emails.send({ from: FROM, to: adminEmail, subject: `NDA submitted — ${escapeHtml(investorName)} / ${escapeHtml(projectName)}`, html: baseTemplate(content, "NDA Submitted for Review") })
 }
 
 export async function sendNewDocumentEmail(to: string, firstName: string, projectName: string, docName: string) {
   const content = `
-    <p>Hi ${firstName},</p>
-    <p>A new document has been published in the <strong>${projectName}</strong> data room:</p>
-    <div class="highlight"><p>📄 <strong>${docName}</strong></p></div>
+    <p>Hi ${escapeHtml(firstName)},</p>
+    <p>A new document has been published in the <strong>${escapeHtml(projectName)}</strong> data room:</p>
+    <div class="highlight"><p>📄 <strong>${escapeHtml(docName)}</strong></p></div>
     <a href="${PORTAL}/dashboard" class="btn">View in Data Room →</a>
     <p>Best regards,<br><strong>The Alcazar Team</strong></p>`
-  await resend.emails.send({ from: FROM, to, subject: `New document available — ${projectName}`, html: baseTemplate(content, "New Document Available") })
+  await resend.emails.send({ from: FROM, to, subject: `New document available — ${escapeHtml(projectName)}`, html: baseTemplate(content, "New Document Available") })
 }
 
 // Generic sendEmail dispatcher — backward compat

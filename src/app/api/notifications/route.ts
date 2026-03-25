@@ -13,7 +13,7 @@ export async function GET() {
       take: 50,
     })
     return NextResponse.json(notifs)
-  } catch (e: any) {
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
@@ -23,16 +23,29 @@ export async function PATCH(req: NextRequest) {
     const session = await auth()
     if (!session?.user?.id) return NextResponse.json({}, { status: 401 })
     const { id, all } = await req.json()
+
     if (all) {
       await prisma.notification.updateMany({
         where: { userId: session.user.id, readAt: null },
         data: { readAt: new Date() }
       })
-    } else if (id) {
-      await prisma.notification.update({ where: { id }, data: { readAt: new Date() } })
+      return NextResponse.json({ success: true })
     }
-    return NextResponse.json({ success: true })
-  } catch (e: any) {
+
+    if (id) {
+      // updateMany enforces ownership — never update another user's notification
+      const result = await prisma.notification.updateMany({
+        where: { id, userId: session.user.id },
+        data: { readAt: new Date() }
+      })
+      if (result.count === 0) {
+        return NextResponse.json({ error: "Notification not found" }, { status: 404 })
+      }
+      return NextResponse.json({ success: true })
+    }
+
+    return NextResponse.json({ error: "Missing id or all" }, { status: 400 })
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
