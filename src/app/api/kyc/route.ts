@@ -13,8 +13,11 @@ export async function GET() {
   try {
     const session = await auth()
     if (!session?.user?.id) return NextResponse.json(null, { status: 401 })
-    const kyc = await prisma.kycRecord.findUnique({ where: { userId: session.user.id } })
-    return NextResponse.json(kyc)
+    const docs = await prisma.kycDocument.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "desc" },
+    })
+    return NextResponse.json(docs)
   } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
@@ -25,12 +28,11 @@ export async function POST(req: NextRequest) {
     const session = await auth()
     if (!session?.user?.id) return NextResponse.json({}, { status: 401 })
 
-    const fd          = await req.formData()
-    const idDoc       = fd.get("idDoc") as File | null
-    const addressDoc  = fd.get("addressDoc") as File | null
-    const idDocType   = fd.get("idDocType") as string | null
+    const fd         = await req.formData()
+    const idDoc      = fd.get("idDoc") as File | null
+    const addressDoc = fd.get("addressDoc") as File | null
+    const idDocType  = fd.get("idDocType") as string | null
 
-    // Validate each uploaded file
     function validateFile(file: File | null): string | null {
       if (!file) return null
       const ext = extname(file.name).toLowerCase()
@@ -40,46 +42,55 @@ export async function POST(req: NextRequest) {
       return null
     }
 
-    if (idDoc) {
-      const err = validateFile(idDoc)
-      if (err) return NextResponse.json({ error: err }, { status: 400 })
-    }
-    if (addressDoc) {
-      const err = validateFile(addressDoc)
-      if (err) return NextResponse.json({ error: err }, { status: 400 })
-    }
+    const idErr = validateFile(idDoc)
+    if (idErr) return NextResponse.json({ error: idErr }, { status: 400 })
+    const addrErr = validateFile(addressDoc)
+    if (addrErr) return NextResponse.json({ error: addrErr }, { status: 400 })
 
     const uploadDir = join(process.env.UPLOAD_DIR ?? "/app/uploads", "kyc", session.user.id)
     await mkdir(uploadDir, { recursive: true })
 
-    let idDocPath: string | null = null
-    let addressDocPath: string | null = null
+    const created: any[] = []
 
     if (idDoc) {
       const ext      = extname(idDoc.name).toLowerCase()
       const filename = `id_${Date.now()}${ext}`
       await writeFile(join(uploadDir, filename), Buffer.from(await idDoc.arrayBuffer()))
-      idDocPath = `kyc/${session.user.id}/${filename}`
+      const doc = await prisma.kycDocument.create({
+        data: {
+          userId:   session.user.id,
+          docType:  idDocType ?? "ID_DOCUMENT",
+          filePath: `kyc/${session.user.id}/${filename}`,
+          fileName: idDoc.name,
+          status:   "PENDING",
+        }
+      })
+      created.push(doc)
     }
+
     if (addressDoc) {
       const ext      = extname(addressDoc.name).toLowerCase()
       const filename = `address_${Date.now()}${ext}`
       await writeFile(join(uploadDir, filename), Buffer.from(await addressDoc.arrayBuffer()))
-      addressDocPath = `kyc/${session.user.id}/${filename}`
+      const doc = await prisma.kycDocument.create({
+        data: {
+          userId:   session.user.id,
+          docType:  "PROOF_OF_ADDRESS",
+          filePath: `kyc/${session.user.id}/${filename}`,
+          fileName: addressDoc.name,
+          status:   "PENDING",
+        }
+      })
+      created.push(doc)
     }
 
-    const kyc = await prisma.kycRecord.upsert({
+    // Update profile KYC status
+    await prisma.investorProfile.updateMany({
       where: { userId: session.user.id },
-      create: { userId: session.user.id, status: "PENDING", idDocPath, idDocType, addressDocPath, submittedAt: new Date() },
-      update: {
-        status: "PENDING",
-        ...(idDocPath    && { idDocPath }),
-        ...(idDocType    && { idDocType }),
-        ...(addressDocPath && { addressDocPath }),
-        submittedAt: new Date(),
-      }
+      data: { kycStatus: "PENDING" }
     })
-    return NextResponse.json(kyc)
+
+    return NextResponse.json({ success: true, count: created.length })
   } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }

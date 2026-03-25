@@ -5,35 +5,59 @@ import { prisma } from "@/lib/prisma"
 import { createNotification } from "@/lib/notifications"
 
 export async function GET() {
-  await requireAdmin()
-  const records = await prisma.kycRecord.findMany({
-    include: { user: { include: { profile: true } } },
-    orderBy: { submittedAt: "desc" },
-  })
-  return NextResponse.json(records.map(k => ({
-    id: k.id, userId: k.userId, status: k.status,
-    idDocPath: k.idDocPath, idDocType: k.idDocType,
-    addressDocPath: k.addressDocPath, reviewNote: k.reviewNote,
-    submittedAt: k.submittedAt?.toISOString() ?? null,
-    reviewedAt: k.reviewedAt?.toISOString() ?? null,
-    name: k.user.profile ? `${k.user.profile.firstName} ${k.user.profile.lastName}` : k.user.email,
-    email: k.user.email,
-  })))
+  try {
+    await requireAdmin()
+    const docs = await prisma.kycDocument.findMany({
+      include: { user: { include: { profile: true } } },
+      orderBy: { createdAt: "desc" },
+    })
+    return NextResponse.json(docs.map(d => ({
+      id: d.id,
+      userId: d.userId,
+      docType: d.docType,
+      filePath: d.filePath,
+      fileName: d.fileName,
+      status: d.status,
+      adminNote: d.adminNote,
+      createdAt: d.createdAt.toISOString(),
+      reviewedAt: d.reviewedAt?.toISOString() ?? null,
+      name: d.user.profile
+        ? `${d.user.profile?.firstName} ${d.user.profile?.lastName}`
+        : d.user.email,
+      email: d.user.email,
+    })))
+  } catch {
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
 }
 
 export async function PATCH(req: NextRequest) {
-  const admin = await requireAdmin()
-  const { id, action, reviewNote } = await req.json()
-  const status = action === "approve" ? "APPROVED" : "REJECTED"
-  const record = await prisma.kycRecord.update({
-    where: { id },
-    data: { status, reviewNote, reviewedBy: admin.id, reviewedAt: new Date() },
-  })
-  await createNotification({
-    userId: record.userId,
-    type: status === "APPROVED" ? "KYC_APPROVED" : "KYC_REJECTED",
-    title: `KYC ${status === "APPROVED" ? "Approved" : "Rejected"}`,
-    body: reviewNote ?? (status === "APPROVED" ? "Your identity has been verified." : "Your KYC submission was rejected."),
-  })
-  return NextResponse.json({ success: true })
+  try {
+    const admin = await requireAdmin()
+    const { id, action, adminNote } = await req.json()
+    const status = action === "approve" ? "APPROVED" : "REJECTED"
+
+    const doc = await prisma.kycDocument.update({
+      where: { id },
+      data: {
+        status: status as any,
+        adminNote: adminNote ?? null,
+        reviewedBy: admin.id,
+        reviewedAt: new Date(),
+      },
+    })
+
+    await createNotification({
+      userId: doc.userId,
+      type: status === "APPROVED" ? "KYC_APPROVED" : "KYC_REJECTED",
+      title: `KYC ${status === "APPROVED" ? "Approved" : "Rejected"}`,
+      body: adminNote ?? (status === "APPROVED"
+        ? "Your identity has been verified."
+        : "Your KYC submission was rejected."),
+    })
+
+    return NextResponse.json({ success: true })
+  } catch {
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
 }
