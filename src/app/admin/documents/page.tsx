@@ -38,7 +38,7 @@ export default async function DocumentsPage({ searchParams }: { searchParams: Pr
         </div>
         {projects.length > 1 && (
           <form method="GET">
-            <select name="project" defaultValue={currentProject ?? ""} onChange="this.form.submit()" className="input select" style={{ width: "auto" }}>
+            <select name="project" defaultValue={currentProject ?? ""} onChange={e => (e.target.form as HTMLFormElement)?.submit()} className="input select" style={{ width: "auto" }}>
               {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
           </form>
