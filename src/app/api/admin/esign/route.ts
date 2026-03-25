@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
   await createNotification({
     userId: recipientId,
-    type: "ESIGN_REQUEST",
+    type: "ESIGN_REQUESTED",
     title: "Signature required",
     body: `Please sign: ${req2.document.name}`,
     link: `/esign/${req2.id}`
