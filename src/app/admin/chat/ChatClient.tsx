@@ -12,7 +12,7 @@ export function ChatClient({ investors, isAdmin, currentUserId }: { investors: I
   const [input, setInput]       = useState("")
   const [loading, setLoading]   = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
-  const pollRef   = useRef<NodeJS.Timeout>()
+  const pollRef   = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     if (!selected || !selectedProject) return
