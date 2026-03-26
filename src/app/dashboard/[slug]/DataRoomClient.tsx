@@ -23,7 +23,7 @@ type Update  = { id: string; title: string; content: string; createdAt: string }
 type ChatMsg = { id: string; content: string; isAdmin: boolean; createdAt: string }
 
 export function DataRoomClient({
-  projectId, projectName, projectSlug, folders, documents, recentActivity, questions, userId
+  projectId, projectName, projectSlug, folders, documents, recentActivity, questions, userId, updates
 }: {
   projectId: string; projectName: string; projectSlug: string
   folders: Folder[]; documents: Doc[]; recentActivity: Activity[]; questions: Question[]; userId: string
