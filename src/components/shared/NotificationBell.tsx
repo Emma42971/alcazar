@@ -56,7 +56,7 @@ export function NotificationBell() {
     NDA_SUBMITTED: "📝", NDA_APPROVED: "✅", NDA_REJECTED: "❌",
     ACCESS_GRANTED: "🔓", NEW_DOCUMENT: "📄", QA_ANSWERED: "💬",
     NEW_MESSAGE: "✉️", KYC_APPROVED: "✅", ESIGN_REQUESTED: "✍️",
-    ESIGN_COMPLETED: "✅", WORKFLOW_TRIGGERED: "⚡",
+    ESIGN_COMPLETED: "✅", WORKFLOW_FIRED: "⚡",
   }
 
   return (
