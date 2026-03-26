@@ -45,7 +45,7 @@ async function getStripe() {
   if (!STRIPE_ENABLED) throw new Error("Stripe is not enabled. Configure STRIPE_SECRET_KEY in environment.")
   if (!_stripe) {
     const Stripe = (await import("stripe")).default
-    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-01-27.acacia", typescript: true })
+    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-02-24.acacia", typescript: true })
   }
   return _stripe
 }
