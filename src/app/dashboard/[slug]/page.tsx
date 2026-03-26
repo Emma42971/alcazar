@@ -102,7 +102,7 @@ export default async function DataRoomPage({ params }: { params: Promise<{ slug:
             project={project}
             user={user}
             hasAccess={hasAccess}
-            ndaStatus={ndaRow?.status ?? ndaReq?.status ?? null}
+            ndaStatus={ndaReq?.status ?? null}
           />
         ) : (
           <DataRoomClient
