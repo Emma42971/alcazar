@@ -17,7 +17,7 @@ export default async function CapTablePage({ searchParams }: { searchParams: Pro
         <div><h1 className="page-title">Cap Table</h1><p className="page-subtitle">Ownership structure by project</p></div>
       </div>
       {currentProject
-        ? <CapTableClient projectId={currentProject} entries={entries.map(e => ({ ...e, amount: Number(e.amount), shareClass: "", notes: (e as any).note ?? null }))} />
+        ? <CapTableClient projectId={currentProject} entries={entries.map(e => ({ ...e, amount: Number(e.amount), note: (e as any).note ?? null }))} />
         : <div className="card card-p text-center py-10 text-sm" style={{ color: "hsl(var(--text-muted))" }}>No projects yet.</div>}
     </div>
   )

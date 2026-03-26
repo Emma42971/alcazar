@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { FolderOpen, FileText, Lock, Download, Eye, MessageSquare, Send, Loader2, Shield, BookOpen } from "lucide-react"
+import { FolderOpen, FileText, Lock, Download, Eye, MessageSquare, Send, Loader2, Shield, BookOpen, Bell } from "lucide-react"
 
 const FOLDER_ICONS: Record<string, string> = {
   "financials": "💰",

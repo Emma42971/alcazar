@@ -20,7 +20,7 @@ export function CapTableClient({ projectId, entries }: { projectId: string; entr
     setLoading(true)
     await fetch("/api/admin/captable", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ projectId, investorName: name, amount: parseInt(amount), shareClass, entryType })
+      body: JSON.stringify({ projectId, investorName: name, amount: parseInt(amount), entryType })
     })
     setName(""); setAmount(""); setLoading(false); router.refresh()
   }

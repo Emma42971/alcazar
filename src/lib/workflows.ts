@@ -10,7 +10,7 @@ export async function executeWorkflows(trigger: TriggerType, context: {
   const rules = await prisma.workflowRule.findMany({
     where: {
       trigger,
-      isActive: true,
+      active: true,
       OR: [
         { projectId: context.projectId ?? undefined },
         { projectId: null },

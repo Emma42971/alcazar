@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { CheckCircle, XCircle, FileText, Loader2, Eye } from "lucide-react"
 
-type KycRec = { id: string; userId: string; name: string; email: string; status: string; idDocPath: string | null; idDocType: string | null; addressDocPath: string | null; reviewNote: string | null; submittedAt: string | null }
+type KycRec = { id: string; userId: string; name: string; email: string; status: string; idDocPath: string | null; idDocType: string | null; addressDocPath: string | null; adminNote: string | null; submittedAt: string | null }
 
 export function KycAdminClient({ records }: { records: KycRec[] }) {
   const router = useRouter()
@@ -14,7 +14,7 @@ export function KycAdminClient({ records }: { records: KycRec[] }) {
     setLoading(id + action)
     await fetch("/api/admin/kyc", {
       method: "PATCH", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, action, reviewNote: note[id] }),
+      body: JSON.stringify({ id, action, adminNote: note[id] }),
     })
     setLoading(null)
     router.refresh()
@@ -68,7 +68,7 @@ export function KycAdminClient({ records }: { records: KycRec[] }) {
               </button>
             </div>
           )}
-          {r.reviewNote && <p className="text-sm p-2 rounded" style={{ background: "hsl(var(--bg-subtle))", color: "hsl(var(--text-subtle))" }}>Note: {r.reviewNote}</p>}
+          {r.adminNote && <p className="text-sm p-2 rounded" style={{ background: "hsl(var(--bg-subtle))", color: "hsl(var(--text-subtle))" }}>Note: {r.adminNote}</p>}
         </div>
       ))}
     </div>
