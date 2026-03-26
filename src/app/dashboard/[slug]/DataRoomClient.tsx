@@ -285,10 +285,7 @@ export function DataRoomClient({
             </div>
           </div>
         )}
-      </div>
-    </div>
-  )
-}{/* UPDATES TAB */}
+
         {activeTab === "updates" && (
           <div className="space-y-3">
             {(updates ?? []).length === 0 ? (
@@ -310,4 +307,7 @@ export function DataRoomClient({
           </div>
         )}
 
-        
+      </div>
+    </div>
+  )
+}
