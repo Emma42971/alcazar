@@ -20,7 +20,7 @@ const ACTIONS = [
   { value: "CREATE_NOTE",       label: "Create CRM note" },
 ]
 
-type Rule = { id: string; name: string; trigger: string; action: string; isActive: boolean; logs: { id: string; status: string; createdAt: string }[] }
+type Rule = { id: string; name: string; trigger: string; action: string; active: boolean; logs: { id: string; status: string; createdAt: string }[] }
 type Project = { id: string; name: string }
 
 export function WorkflowsClient({ rules, projects }: { rules: Rule[]; projects: Project[] }) {
@@ -39,10 +39,10 @@ export function WorkflowsClient({ rules, projects }: { rules: Rule[]; projects: 
     setName(""); router.refresh()
   }
 
-  async function toggle(id: string, isActive: boolean) {
+  async function toggle(id: string, active: boolean) {
     await fetch("/api/admin/workflows", {
       method: "PATCH", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, isActive: !isActive })
+      body: JSON.stringify({ id, isActive: !active })
     })
     router.refresh()
   }
@@ -107,8 +107,8 @@ export function WorkflowsClient({ rules, projects }: { rules: Rule[]; projects: 
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="font-semibold">{rule.name}</p>
-                      <span className={`badge ${rule.isActive ? "badge-green" : "badge-gray"}`}>
-                        {rule.isActive ? "Active" : "Paused"}
+                      <span className={`badge ${rule.active ? "badge-green" : "badge-gray"}`}>
+                        {rule.active ? "Active" : "Paused"}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm flex-wrap">
@@ -123,8 +123,8 @@ export function WorkflowsClient({ rules, projects }: { rules: Rule[]; projects: 
                     )}
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <button onClick={() => toggle(rule.id, rule.isActive)} className="btn btn-ghost btn-icon-sm" title={rule.isActive ? "Pause" : "Activate"}>
-                      {rule.isActive ? <ToggleRight className="h-5 w-5" style={{ color: "hsl(var(--emerald))" }} /> : <ToggleLeft className="h-5 w-5" />}
+                    <button onClick={() => toggle(rule.id, rule.active)} className="btn btn-ghost btn-icon-sm" title={rule.active ? "Pause" : "Activate"}>
+                      {rule.active ? <ToggleRight className="h-5 w-5" style={{ color: "hsl(var(--emerald))" }} /> : <ToggleLeft className="h-5 w-5" />}
                     </button>
                     <button onClick={() => remove(rule.id)} className="btn btn-danger btn-icon-sm">
                       <Trash2 className="h-3.5 w-3.5" />

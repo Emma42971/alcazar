@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   await requireAdmin()
   const { id, isActive } = await req.json()
-  const rule = await prisma.workflowRule.update({ where: { id }, data: { isActive } })
+  const rule = await prisma.workflowRule.update({ where: { id }, data: { active: isActive } })
   return NextResponse.json(rule)
 }
 
