@@ -42,7 +42,7 @@ export const getTenantByHost = cache(async (host: string): Promise<TenantWithPla
   const tenant = await prisma.tenant.findFirst({
     where: tenantId ? { id: tenantId } : { slug },
     include: {
-      plan: true,
+      tenantPlan: true,
     }
   })
 
