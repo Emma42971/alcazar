@@ -12,30 +12,35 @@ export default async function PortfolioPage() {
   if (!session?.user?.id) redirect("/")
   const userId = session.user.id
 
+  // Investment has no project relation — fetch separately
   const [investments, distributions, referral] = await Promise.all([
     prisma.investment.findMany({
       where: { investorId: userId },
-      include: { project: { select: { id: true, name: true, slug: true, sector: true, logoImage: true, coverImage: true } } },
       orderBy: { createdAt: "desc" },
     }),
     prisma.distribution.findMany({
       where: { investorId: userId },
-      include: { project: { select: { name: true } } },
-      orderBy: { scheduledDate: "desc" },
+      orderBy: { createdAt: "desc" },
     }),
     prisma.referralCode.findFirst({ where: { userId } }),
   ])
 
-  const projectIds = [...new Set(investments.map(i => i.projectId))]
+  const projectIds = [...new Set([
+    ...investments.map(i => i.projectId),
+  ])]
+
   const projects = await prisma.project.findMany({
     where: { id: { in: projectIds } },
-    select: { id: true, name: true, raisedAmount: true, targetRaise: true, irrTargetBps: true }
+    select: { id: true, name: true, slug: true, sector: true, logoImage: true, coverImage: true, raisedAmount: true, targetRaise: true, irrTargetBps: true }
   })
-  const projectMap = Object.fromEntries(projects.map(p => [p.id, { ...p, raisedAmount: Number(p.raisedAmount ?? 0), targetRaise: Number(p.targetRaise ?? 0) }]))
+  const projectMap = Object.fromEntries(projects.map(p => [p.id, {
+    ...p,
+    raisedAmount: Number(p.raisedAmount ?? 0),
+    targetRaise: Number(p.targetRaise ?? 0),
+  }]))
 
   const totalInvested = investments.reduce((s, i) => s + Number(i.amount ?? 0), 0)
   const totalReceived = distributions.filter(d => d.status === "PAID").reduce((s, d) => s + Number(d.amount ?? 0), 0)
-
   const summary = { totalInvested, totalReceived, count: projectIds.length }
 
   return (
